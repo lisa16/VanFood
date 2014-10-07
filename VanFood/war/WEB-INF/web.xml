@@ -7,6 +7,17 @@
 
   <!-- Servlets -->
   
+    <servlet>
+    <servlet-name>greetServlet</servlet-name>
+    <servlet-class>com.google.gwt.sample.vanfood.server.GreetingServiceImpl</servlet-class>
+  </servlet>
+  
+  <servlet-mapping>
+    <servlet-name>greetServlet</servlet-name>
+    <url-pattern>/vanfood/greet</url-pattern>
+  </servlet-mapping>
+  
+  
   <!-- Default page to serve -->
   <welcome-file-list>
     <welcome-file>VanFood.html</welcome-file>
