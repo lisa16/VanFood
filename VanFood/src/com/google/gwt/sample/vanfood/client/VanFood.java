@@ -37,8 +37,6 @@ public class VanFood implements EntryPoint {
 		chineseButton.getElement().setClassName("btn btn-xs btn-primary");
 		Button caribbeanButton = new Button("Caribbean");
 		caribbeanButton.getElement().setClassName("btn btn-xs btn-primary");
-		Button phillyButton = new Button("Philly Cheese Steak");
-		phillyButton.getElement().setClassName("btn btn-xs btn-primary");
 		Button juiceButton = new Button("Juice and Smoothies");
 		juiceButton.getElement().setClassName("btn btn-xs btn-primary");
 		Button comfortButton = new Button("Comfort Food");
@@ -53,9 +51,9 @@ public class VanFood implements EntryPoint {
 		indianButton.getElement().setClassName("btn btn-xs btn-primary");
 		Button mediterraneanButton = new Button("Mediterranean");
 		mediterraneanButton.getElement().setClassName("btn btn-xs btn-primary");
-		Button fusionButton = new Button("Healthy Fusion");
+		Button fusionButton = new Button("Fusion");
 		fusionButton.getElement().setClassName("btn btn-xs btn-primary");
-		Button coffeeButton = new Button("Sustainable Coffee and Gluten Free Baked Goods");
+		Button coffeeButton = new Button("Coffee and Baked Goods");
 		coffeeButton.getElement().setClassName("btn btn-xs btn-primary");
 		Button israeliButton = new Button("Israeli Kosher");
 		israeliButton.getElement().setClassName("btn btn-xs btn-primary");
@@ -65,14 +63,6 @@ public class VanFood implements EntryPoint {
 		persianButton.getElement().setClassName("btn btn-xs btn-primary");
 		Button sandwichesButton = new Button("Sandwiches");
 		sandwichesButton.getElement().setClassName("btn btn-xs btn-primary");
-		Button panasianButton = new Button("Pan Asian");
-		panasianButton.getElement().setClassName("btn btn-xs btn-primary");
-		Button piesButton = new Button("Australian Pies");
-		piesButton.getElement().setClassName("btn btn-xs btn-primary");
-		Button dimsumButton = new Button("Dim Sum");
-		dimsumButton.getElement().setClassName("btn btn-xs btn-primary");
-		Button tacosButton = new Button("Tacos");
-		tacosButton.getElement().setClassName("btn btn-xs btn-primary");
 		Button mexicanButton = new Button("Mexican");
 		mexicanButton.getElement().setClassName("btn btn-xs btn-primary");
 		Button porkButton = new Button("Pulled Pork");
@@ -83,28 +73,21 @@ public class VanFood implements EntryPoint {
 		mideasternButton.getElement().setClassName("btn btn-xs btn-primary");
 		Button vegButton = new Button("Vegan and Vegetarian");
 		vegButton.getElement().setClassName("btn btn-xs btn-primary");
-		Button icecreamButton = new Button("Ice Cream");
-		icecreamButton.getElement().setClassName("btn btn-xs btn-primary");
 		Button crepesButton = new Button("Crepes");
 		crepesButton.getElement().setClassName("btn btn-xs btn-primary");
-		Button greekButton = new Button("Greek Cuisine");
+		Button greekButton = new Button("Greek");
 		greekButton.getElement().setClassName("btn btn-xs btn-primary");
-		Button asianButton = new Button("Asian Fusion");
-		asianButton.getElement().setClassName("btn btn-xs btn-primary");
 		Button vietnameseButton = new Button("Vietnamese");
 		vietnameseButton.getElement().setClassName("btn btn-xs btn-primary");
-		Button thaiButton = new Button("Thai Food");
+		Button thaiButton = new Button("Thai");
 		thaiButton.getElement().setClassName("btn btn-xs btn-primary");
 		Button elsalvadorianButton = new Button("El Salvadorian");
 		elsalvadorianButton.getElement().setClassName("btn btn-xs btn-primary");
-		Button macButton = new Button("Homemade Macaroni and Cheese");
-		macButton.getElement().setClassName("btn btn-xs btn-primary");
-		Button dinerButton = new Button("Diner Food");
-		dinerButton.getElement().setClassName("btn btn-xs btn-primary");
-		Button belgianButton = new Button("Belgian Waffles");
-		belgianButton.getElement().setClassName("btn btn-xs btn-primary");
 		Button saladButton = new Button("Salads");
 		saladButton.getElement().setClassName("btn btn-xs btn-primary");
+		Button westButton = new Button("West Coast Fare");
+		westButton.getElement().setClassName("btn btn-xs btn-primary");
+		
 		
 		RootPanel.get().add(pizzaButton);
 		RootPanel.get().add(ukranianButton);
@@ -112,7 +95,6 @@ public class VanFood implements EntryPoint {
 		RootPanel.get().add(seafoodButton);
 		RootPanel.get().add(chineseButton);
 		RootPanel.get().add(caribbeanButton);
-		RootPanel.get().add(phillyButton);
 		RootPanel.get().add(comfortButton);
 		RootPanel.get().add(breakfastButton);
 		RootPanel.get().add(chestnutsButton);
@@ -121,25 +103,17 @@ public class VanFood implements EntryPoint {
 		RootPanel.get().add(japaneseButton);
 		RootPanel.get().add(persianButton);
 		RootPanel.get().add(sandwichesButton);
-		RootPanel.get().add(panasianButton);
-		RootPanel.get().add(piesButton);
-		RootPanel.get().add(dimsumButton);
-		RootPanel.get().add(tacosButton);
 		RootPanel.get().add(mexicanButton);
 		RootPanel.get().add(porkButton);
 		RootPanel.get().add(bbqButton);
 		RootPanel.get().add(mideasternButton);
 		RootPanel.get().add(vegButton);
-		RootPanel.get().add(icecreamButton);
 		RootPanel.get().add(crepesButton);
 		RootPanel.get().add(greekButton);
-		RootPanel.get().add(asianButton);
 		RootPanel.get().add(vietnameseButton);
 		RootPanel.get().add(thaiButton);
 		RootPanel.get().add(elsalvadorianButton);
-		RootPanel.get().add(macButton);
-		RootPanel.get().add(dinerButton);
-		RootPanel.get().add(belgianButton);
-		RootPanel.get().add(saladButton);				
+		RootPanel.get().add(saladButton);		
+		RootPanel.get().add(westButton);
 	}
 }
