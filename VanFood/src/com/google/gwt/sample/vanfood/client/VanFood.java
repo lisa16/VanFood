@@ -1,13 +1,29 @@
 package com.google.gwt.sample.vanfood.client;
 
+import java.util.ArrayList;
+
 import com.google.gwt.core.client.EntryPoint;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.VerticalPanel;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
  */
 public class VanFood implements EntryPoint {
+	
+	private VerticalPanel mainPanel = new VerticalPanel();
+	private HorizontalPanel vendorPanel = new HorizontalPanel();
+	private FlexTable vendorsFlexTable = new FlexTable();
+	private VerticalPanel mapPanel = new VerticalPanel();
+	private FlowPanel buttonsPanel = new FlowPanel();
+	private ArrayList<Vendor> vendors = new ArrayList<Vendor>();
+	
 	/**
 	 * The message displayed to the user when the server cannot be reached or
 	 * returns an error.
@@ -25,6 +41,59 @@ public class VanFood implements EntryPoint {
 	 * This is the entry point method.
 	 */
 	public void onModuleLoad() {
+		// Create table for vendor data.
+		// Add styles to elements in the stock list table.
+	    vendorsFlexTable.getRowFormatter().addStyleName(0, "vendorListHeader");
+	    vendorsFlexTable.addStyleName("vendorList");
+		vendorsFlexTable.setText(0, 0, "Vendor");  
+		vendorsFlexTable.setText(0, 1, "Location");  
+		vendorsFlexTable.setText(0, 2, "Add to Favourites");
+		
+		// hard-code some vendors for now
+		Vendor vendor1 = new Vendor("vendor1name", "vendor1addr", "vendor1food");
+		Vendor vendor2 = new Vendor("vendor2name", "vendor2addr", "vendor2food");
+		vendors.add(vendor1);
+		vendors.add(vendor2);
+		for (Vendor v : vendors) {
+			addVendor(v);
+		}
+		
+		// hard-code a random map for now
+		Image map = new Image();
+		map.setUrl("http://maps.googleapis.com/maps/api/staticmap?center=Vancouver,+BC&zoom=12&size=900x500&maptype=roadmap");
+		mapPanel.add(map);
+				
+	    // Assemble table and map panel.
+		mapPanel.addStyleName("addPanel");
+		vendorsFlexTable.addStyleName("addPanel");
+		vendorPanel.add(vendorsFlexTable);
+		vendorPanel.add(mapPanel);
+		
+		// Add food type buttons
+		addButtons();
+
+	    // Assemble Main panel.
+	    mainPanel.add(vendorPanel);
+	    mainPanel.add(buttonsPanel);
+	    
+	    // Associate the Main panel with the HTML host page.
+	    RootPanel.get("vendorList").add(mainPanel);
+		
+	}
+	
+	/**
+	 * Add vendor to FlexTable. 
+	 * Executed at startup.
+	 */
+	private void addVendor(Vendor vendor) {
+		int row = vendorsFlexTable.getRowCount();
+	    vendorsFlexTable.setText(row, 0, vendor.getName());
+	    vendorsFlexTable.getCellFormatter().addStyleName(row, 0, "vendorColumn");
+	    vendorsFlexTable.setText(row, 1, vendor.getAddress());
+	    vendorsFlexTable.getCellFormatter().addStyleName(row, 1, "vendorColumn");
+	}
+
+	private void addButtons() {
 		Button pizzaButton = new Button("Pizza");
 		pizzaButton.getElement().setClassName("btn btn-xs btn-primary");
 		Button ukranianButton = new Button("Ukranian");
@@ -89,31 +158,31 @@ public class VanFood implements EntryPoint {
 		westButton.getElement().setClassName("btn btn-xs btn-primary");
 		
 		
-		RootPanel.get().add(pizzaButton);
-		RootPanel.get().add(ukranianButton);
-		RootPanel.get().add(frenchButton);
-		RootPanel.get().add(seafoodButton);
-		RootPanel.get().add(chineseButton);
-		RootPanel.get().add(caribbeanButton);
-		RootPanel.get().add(comfortButton);
-		RootPanel.get().add(breakfastButton);
-		RootPanel.get().add(chestnutsButton);
-		RootPanel.get().add(mediterraneanButton);
-		RootPanel.get().add(israeliButton);
-		RootPanel.get().add(japaneseButton);
-		RootPanel.get().add(persianButton);
-		RootPanel.get().add(sandwichesButton);
-		RootPanel.get().add(mexicanButton);
-		RootPanel.get().add(porkButton);
-		RootPanel.get().add(bbqButton);
-		RootPanel.get().add(mideasternButton);
-		RootPanel.get().add(vegButton);
-		RootPanel.get().add(crepesButton);
-		RootPanel.get().add(greekButton);
-		RootPanel.get().add(vietnameseButton);
-		RootPanel.get().add(thaiButton);
-		RootPanel.get().add(elsalvadorianButton);
-		RootPanel.get().add(saladButton);		
-		RootPanel.get().add(westButton);
+		buttonsPanel.add(pizzaButton);
+		buttonsPanel.add(ukranianButton);
+		buttonsPanel.add(frenchButton);
+		buttonsPanel.add(seafoodButton);
+		buttonsPanel.add(chineseButton);
+		buttonsPanel.add(caribbeanButton);
+		buttonsPanel.add(comfortButton);
+		buttonsPanel.add(breakfastButton);
+		buttonsPanel.add(chestnutsButton);
+		buttonsPanel.add(mediterraneanButton);
+		buttonsPanel.add(israeliButton);
+		buttonsPanel.add(japaneseButton);
+		buttonsPanel.add(persianButton);
+		buttonsPanel.add(sandwichesButton);
+		buttonsPanel.add(mexicanButton);
+		buttonsPanel.add(porkButton);
+		buttonsPanel.add(bbqButton);
+		buttonsPanel.add(mideasternButton);
+		buttonsPanel.add(vegButton);
+		buttonsPanel.add(crepesButton);
+		buttonsPanel.add(greekButton);
+		buttonsPanel.add(vietnameseButton);
+		buttonsPanel.add(thaiButton);
+		buttonsPanel.add(elsalvadorianButton);
+		buttonsPanel.add(saladButton);	
+		buttonsPanel.add(westButton);
 	}
 }

@@ -20,6 +20,29 @@ body {
 font-family: Calibri;
 }
 
+/* vendor list header row */
+.vendorListHeader {
+  background-color: #2062B8;
+  color: white;
+}
+
+/* vendor list flex table */
+.vendorList {
+  border: 1px solid silver;
+  padding: 2px;
+  margin-bottom:6px;
+}
+
+/* Space out vendor info columns */
+.vendorColumn {
+  width:8em;
+}
+
+/* Space out Map, Table panel */
+.addPanel {
+  margin: 30px 30px 30px 30px;
+}
+
 .heading {
  background-color: green;
 -moz-border-radius: 15px; 
