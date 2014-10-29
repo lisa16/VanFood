@@ -111,6 +111,7 @@ public class VanFood implements EntryPoint {
 		addButtons();
 
 	    // Assemble Main panel.
+	    mainPanel.add(signOutLink);
 	    mainPanel.add(vendorPanel);
 	    mainPanel.add(buttonsPanel);
 	    
