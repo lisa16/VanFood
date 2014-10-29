@@ -11,7 +11,9 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.core.client.GWT;
 
+import com.google.gwt.user.client.rpc.AsyncCallback;
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
  */
@@ -23,6 +25,7 @@ public class VanFood implements EntryPoint {
 	private VerticalPanel mapPanel = new VerticalPanel();
 	private FlowPanel buttonsPanel = new FlowPanel();
 	private ArrayList<Vendor> vendors = new ArrayList<Vendor>();
+	private ListServiceAsync ListSvc = GWT.create(ListService.class);
 	
 	/**
 	 * The message displayed to the user when the server cannot be reached or
@@ -185,4 +188,28 @@ public class VanFood implements EntryPoint {
 		buttonsPanel.add(saladButton);	
 		buttonsPanel.add(westButton);
 	}
+	
+	//service proxy 
+	  private void refresVendorList() {
+		    // Initialize the service proxy.
+		    if (ListSvc == null) {
+		    	ListSvc = GWT.create(ListService.class);
+		    }
+
+		    // Set up the callback object.
+		    AsyncCallback<Vendor[]> callback = new AsyncCallback<Vendor[]>() {
+		      public void onFailure(Throwable caught) {
+		        // TODO: Do something with errors.
+		      }
+
+			@Override
+			public void onSuccess(Vendor[] result) {
+				// TODO Auto-generated method stub
+				
+			}
+		    };
+
+		    // Make the call to the stock price service.
+		    ListSvc.getVendors(vendors.toArray(new String[0]), callback);
+		  }
 }
