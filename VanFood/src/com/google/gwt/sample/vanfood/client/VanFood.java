@@ -25,7 +25,7 @@ public class VanFood implements EntryPoint {
 	private VerticalPanel mapPanel = new VerticalPanel();
 	private FlowPanel buttonsPanel = new FlowPanel();
 	private ArrayList<Vendor> vendors = new ArrayList<Vendor>();
-	private ListServiceAsync ListSvc = GWT.create(ListService.class);
+	private VendorServiceAsync ListSvc = GWT.create(VendorService.class);
 	
 	/**
 	 * The message displayed to the user when the server cannot be reached or
@@ -193,7 +193,7 @@ public class VanFood implements EntryPoint {
 	  private void refresVendorList() {
 		    // Initialize the service proxy.
 		    if (ListSvc == null) {
-		    	ListSvc = GWT.create(ListService.class);
+		    	ListSvc = GWT.create(VendorService.class);
 		    }
 
 		    // Set up the callback object.

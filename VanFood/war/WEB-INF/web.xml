@@ -12,24 +12,15 @@
 	<!-- Servlets -->
 
 	<servlet>
-		<servlet-name>MapServiceImpl</servlet-name>
+		<servlet-name>VendorService</servlet-name>
 		<servlet-class>com.google.gwt.sample.vanfood.server.MapServiceImpl</servlet-class>
 	</servlet>
 
-	<servlet-mapping>
-		<servlet-name>MapServiceImpl</servlet-name>
-		<url-pattern>/VanFood/MapService</url-pattern>
-	</servlet-mapping>
 
-
-	<servlet>
-		<servlet-name>ListServiceImpl</servlet-name>
-		<servlet-class>com.google.gwt.sample.vanfood.server.ListServiceImpl</servlet-class>
-	</servlet>
 
 	<servlet-mapping>
-		<servlet-name>ListServiceImpl</servlet-name>
-		<url-pattern>/VanFood/ListService</url-pattern>
+		<servlet-name>vendorSevice</servlet-name>
+		<url-pattern>/VanFood/vendorService</url-pattern>
 	</servlet-mapping>
 
 </web-app>
