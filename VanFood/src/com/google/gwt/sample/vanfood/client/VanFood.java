@@ -3,12 +3,16 @@ package com.google.gwt.sample.vanfood.client;
 import java.util.ArrayList;
 
 import com.google.gwt.core.client.EntryPoint;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
@@ -23,6 +27,12 @@ public class VanFood implements EntryPoint {
 	private VerticalPanel mapPanel = new VerticalPanel();
 	private FlowPanel buttonsPanel = new FlowPanel();
 	private ArrayList<Vendor> vendors = new ArrayList<Vendor>();
+	private LoginInfo loginInfo = null;
+	private VerticalPanel loginPanel = new VerticalPanel();
+	private Label loginLabel = new Label(
+    "Please sign in to your Google Account to access the VanFood application.");
+	private Anchor signInLink = new Anchor("Sign In");
+	private Anchor signOutLink = new Anchor("Sign Out");
 	
 	/**
 	 * The message displayed to the user when the server cannot be reached or
@@ -41,6 +51,34 @@ public class VanFood implements EntryPoint {
 	 * This is the entry point method.
 	 */
 	public void onModuleLoad() {
+		LoginServiceAsync loginService = GWT.create(LoginService.class);
+	    loginService.login(GWT.getHostPageBaseURL(), new AsyncCallback<LoginInfo>() {
+	      public void onFailure(Throwable error) {
+	          handleError(error);
+	      }
+	      public void onSuccess(LoginInfo result) {
+	        loginInfo = result;
+	        if(loginInfo.isLoggedIn()) {
+	          loadVanFood();
+	        } else {
+	          loadLogin();
+	        }
+	      }
+	    });		
+	}
+	
+	private void loadLogin(){
+	    signInLink.setHref(loginInfo.getLoginUrl());
+	    loginPanel.add(loginLabel);
+	    loginPanel.add(signInLink);
+	    RootPanel.get("vendorList").add(loginPanel);
+	}
+
+	private void loadVanFood() {
+		
+	    // Set up sign out hyperlink.
+	    signOutLink.setHref(loginInfo.getLogoutUrl());
+
 		// Create table for vendor data.
 		// Add styles to elements in the stock list table.
 	    vendorsFlexTable.getRowFormatter().addStyleName(0, "vendorListHeader");
@@ -78,7 +116,6 @@ public class VanFood implements EntryPoint {
 	    
 	    // Associate the Main panel with the HTML host page.
 	    RootPanel.get("vendorList").add(mainPanel);
-		
 	}
 	
 	/**
@@ -185,4 +222,11 @@ public class VanFood implements EntryPoint {
 		buttonsPanel.add(saladButton);	
 		buttonsPanel.add(westButton);
 	}
+	
+	private void handleError(Throwable error) {
+	    Window.alert(error.getMessage());
+	    if (error instanceof NotLoggedInException) {
+	      Window.Location.replace(loginInfo.getLogoutUrl());
+	    }
+	  }
 }
