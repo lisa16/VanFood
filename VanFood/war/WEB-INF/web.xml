@@ -13,7 +13,7 @@
 
 	<servlet>
 		<servlet-name>VendorService</servlet-name>
-		<servlet-class>com.google.gwt.sample.vanfood.server.MapServiceImpl</servlet-class>
+		<servlet-class>com.google.gwt.sample.vanfood.server.VendorServiceImpl</servlet-class>
 	</servlet>
 
 
