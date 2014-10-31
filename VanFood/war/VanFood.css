@@ -90,6 +90,16 @@ border-radius: 10px;
 	padding-right: 5px;
 }
 
+.FlexTable-Highlight
+{
+	background-color:#FFFF00;
+}
+
+.FlexTable-noHighlight
+{
+	background-color:#FFFFFF;
+}
+
 
 
 
