@@ -1,3 +1,2 @@
 # Module vanfood
 # RPC service class, partial path of RPC policy file
-com.google.gwt.sample.vanfood.client.LoginService, F8C21DE26685944C63CF04F232B2CD8C.gwt.rpc

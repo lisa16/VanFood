@@ -26,17 +26,12 @@ font-family: Calibri;
   color: white;
 }
 
-/* vendor list flex table */
-.vendorList {
-  border: 1px solid silver;
-  padding: 2px;
-  margin-bottom:6px;
-}
 
 /* Space out vendor info columns */
 .vendorColumn {
-  width:8em;
+  width:8em; 
 }
+
 
 /* Space out Map, Table panel */
 .addPanel {
@@ -88,6 +83,16 @@ border-radius: 10px;
 	border: 1px;
 	padding-left:  5px;
 	padding-right: 5px;
+}
+
+.FlexTable-Highlight
+{
+	background-color:#FFFF00;
+}
+
+.FlexTable-noHighlight
+{
+	background-color:#FFFFFF;
 }
 
 

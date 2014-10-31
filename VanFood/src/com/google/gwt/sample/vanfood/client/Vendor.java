@@ -6,6 +6,7 @@ public class Vendor {
 	private String name;
 	private String address;
 	private String foodtype;
+	private boolean highlighted;
 
 	public Vendor(String name, String address, String foodtype) {
 		this.setName(name);
@@ -35,6 +36,10 @@ public class Vendor {
 
 	public void setFoodtype(String foodtype) {
 		this.foodtype = foodtype;
+	}
+	
+	public boolean isHighlighted(){
+		return this.highlighted;
 	}
 
 }
