@@ -5,10 +5,10 @@ import java.util.ArrayList;
 import com.google.gwt.user.client.ui.HTMLTable.Cell;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
@@ -89,7 +89,9 @@ public class VanFood implements EntryPoint {
 
 		// Create table for vendor data.
 		// Add styles to elements in the stock list table.
+
 	    vendorsFlexTable.addClickHandler(userRowCheck);
+
 		vendorsFlexTable.getRowFormatter().addStyleName(0, "vendorListHeader");
 		vendorsFlexTable.addStyleName("vendorList");
 		vendorsFlexTable.setText(0, 0, "Vendor");  
@@ -134,11 +136,13 @@ public class VanFood implements EntryPoint {
 	 */
 	private void addVendor(Vendor vendor) {
 		int row = vendorsFlexTable.getRowCount();
+
 		vendorsFlexTable.getRowFormatter().addStyleName(row, "FlexTable-noHighlight");
 	    vendorsFlexTable.setText(row, 0, vendor.getName());
 	    vendorsFlexTable.getColumnFormatter().addStyleName(0, "vendorColumn");
 	    vendorsFlexTable.setText(row, 1, vendor.getAddress());
 	    vendorsFlexTable.getColumnFormatter().addStyleName(1, "vendorColumn");   
+
 	}
 
 	/**
@@ -163,8 +167,11 @@ public class VanFood implements EntryPoint {
 			}
 		}
 		return false;		
+
 	}
+
 	
+
 	// handle clicking on a table row (so a vendor can be selected)
 	ClickHandler userRowCheck = new ClickHandler() {
 		@Override
@@ -199,6 +206,7 @@ public class VanFood implements EntryPoint {
 		}
 	}
 	
+
 	class MenuHandler implements ChangeHandler{
 
 		@Override
