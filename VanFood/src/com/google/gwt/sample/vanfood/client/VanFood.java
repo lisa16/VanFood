@@ -3,6 +3,7 @@ package com.google.gwt.sample.vanfood.client;
 import java.util.ArrayList;
 
 import com.google.gwt.core.client.EntryPoint;
+import com.google.gwt.sample.vanfood.server.Vendor;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlexTable;
@@ -12,7 +13,6 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.core.client.GWT;
-
 import com.google.gwt.user.client.rpc.AsyncCallback;
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
@@ -209,7 +209,7 @@ public class VanFood implements EntryPoint {
 			}
 		    };
 
-		    // Make the call to the stock price service.
+		    // Make the call to the vendor service.
 		    ListSvc.getVendors(vendors.toArray(new String[0]), callback);
 		  }
 }

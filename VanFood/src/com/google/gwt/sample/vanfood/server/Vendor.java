@@ -1,4 +1,4 @@
-package com.google.gwt.sample.vanfood.client;
+package com.google.gwt.sample.vanfood.server;
 
 
 public class Vendor {
@@ -35,6 +35,10 @@ public class Vendor {
 
 	public void setFoodtype(String foodtype) {
 		this.foodtype = foodtype;
+	}
+	
+	public String toString(){
+		return this.name + ", " + this.address + ",  " + this.foodtype;
 	}
 
 }
