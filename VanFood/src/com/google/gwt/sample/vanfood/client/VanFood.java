@@ -210,6 +210,6 @@ public class VanFood implements EntryPoint {
 		    };
 
 		    // Make the call to the vendor service.
-		    ListSvc.getVendors(vendors.toArray(new String[0]), callback);
+		    ListSvc.getVendors(  callback);
 		  }
 }
