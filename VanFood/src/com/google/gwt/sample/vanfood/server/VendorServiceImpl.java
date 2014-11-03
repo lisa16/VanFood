@@ -70,6 +70,8 @@ public class VendorServiceImpl extends RemoteServiceServlet implements VendorSer
               vendors.add(vendor);
         	
         }
+        
+        file.close();
     } 
     catch (Exception e) 
     {
