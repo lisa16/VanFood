@@ -2,6 +2,7 @@ package com.google.gwt.sample.vanfood.client;
 
 import java.util.ArrayList;
 
+import com.google.gwt.sample.vanfood.shared.Vendor;
 import com.google.gwt.user.client.ui.HTMLTable.Cell;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
@@ -27,7 +28,6 @@ import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 /**
  * Entry point classes define <code>onModuleLoad()</code>.

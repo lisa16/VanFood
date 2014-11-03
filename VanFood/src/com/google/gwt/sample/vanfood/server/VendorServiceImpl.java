@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.util.ArrayList;
 
 import com.google.gwt.sample.vanfood.client.VendorService;
+import com.google.gwt.sample.vanfood.shared.Vendor;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 import org.apache.poi.hssf.usermodel.HSSFRow;

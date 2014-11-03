@@ -1,6 +1,6 @@
 package com.google.gwt.sample.vanfood.client;
 
-import com.google.gwt.sample.vanfood.server.Vendor;
+import com.google.gwt.sample.vanfood.shared.Vendor;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 

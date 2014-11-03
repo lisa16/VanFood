@@ -2,6 +2,7 @@
 
 # Package Files #
 *.jar
+!libs/*.jar
 *.war
 
 # gwt caches and compiled units #

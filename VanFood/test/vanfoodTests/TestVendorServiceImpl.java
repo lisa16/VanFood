@@ -13,7 +13,7 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Row;
 import org.junit.Test;
 
-import com.google.gwt.sample.vanfood.server.Vendor;
+import com.google.gwt.sample.vanfood.shared.Vendor;
 
 public class TestVendorServiceImpl {
 

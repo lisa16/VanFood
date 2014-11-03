@@ -1,12 +1,22 @@
-package com.google.gwt.sample.vanfood.server;
+package com.google.gwt.sample.vanfood.shared;
+
+import java.io.Serializable;
 
 
-public class Vendor {
+public class Vendor implements Serializable{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 7851654394103627831L;
 	private String name;
 	private String address;
 	private String foodtype;
 	private boolean highlighted;
+	
+	public Vendor(){
+		
+	}
 
 	public Vendor(String name, String address, String foodtype) {
 		this.setName(name);
@@ -40,6 +50,7 @@ public class Vendor {
 	
 	public boolean isHighlighted(){
 		return this.highlighted;
+	}
 	public String toString(){
 		return this.name + ", " + this.address + ",  " + this.foodtype;
 	}
