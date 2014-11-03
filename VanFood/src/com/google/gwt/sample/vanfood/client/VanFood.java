@@ -160,7 +160,8 @@ public class VanFood implements EntryPoint {
 		vendorsFlexTable.addStyleName("vendorList");
 		vendorsFlexTable.setText(0, 0, "Vendor");  
 		vendorsFlexTable.setText(0, 1, "Location");  
-		vendorsFlexTable.setText(0, 2, "Add to Favourites");
+		vendorsFlexTable.setText(0, 2, "Food Type"); 
+		vendorsFlexTable.setText(0, 3, "Add to Favourites");
 
 		//call to service proxy
 		loadVendorList();
@@ -176,8 +177,8 @@ public class VanFood implements EntryPoint {
 		vendorPanel.add(vendorsFlexTable);
 		vendorPanel.add(mapPanel);
 
-		// Add drop down menu
-		addDropDownMenu();
+		// Add drop down menu (moved to loadVendorList)
+		//addDropDownMenu();
 
 		// Assemble Main panel.
 		mainPanel.add(signOutLink);
@@ -194,12 +195,14 @@ public class VanFood implements EntryPoint {
 	 */
 	private void addVendor(Vendor vendor) {
 		int row = vendorsFlexTable.getRowCount();
-
+		
 		vendorsFlexTable.getRowFormatter().addStyleName(row, "FlexTable-noHighlight");
 		vendorsFlexTable.setText(row, 0, vendor.getName());
 		vendorsFlexTable.getColumnFormatter().addStyleName(0, "vendorColumn");
 		vendorsFlexTable.setText(row, 1, vendor.getAddress());
-		vendorsFlexTable.getColumnFormatter().addStyleName(1, "vendorColumn");   
+		vendorsFlexTable.getColumnFormatter().addStyleName(1, "vendorColumn"); 
+		vendorsFlexTable.setText(row, 2, vendor.getFoodtype());
+		vendorsFlexTable.getColumnFormatter().addStyleName(2, "vendorColumn");
 
 	}
 
@@ -310,6 +313,7 @@ public class VanFood implements EntryPoint {
 			@Override
 			public void onSuccess(Vendor[] result) {
 				updateTable(result);
+				addDropDownMenu();
 			}
 		};
 
@@ -322,8 +326,19 @@ public class VanFood implements EntryPoint {
 		for (int i=1; vendorsFlexTable.getRowCount() < i; i++ ) {
 			vendorsFlexTable.removeRow(i);
 		}
+
+		vendors.clear();
+		for (Vendor x : result) 
+			vendors.add(x);
+		vendorsFlexTable.getRowFormatter().addStyleName(0, "vendorListHeader");
+		vendorsFlexTable.addStyleName("vendorList");
+		vendorsFlexTable.setText(0, 0, "Vendor");  
+		vendorsFlexTable.setText(0, 1, "Location");  
+		vendorsFlexTable.setText(0, 2, "Food Type"); 
+		vendorsFlexTable.setText(0, 3, "Add to Favourites");
 		for (Vendor v : result) {
 			addVendor(v);
+		
 		}
 	}
 }
