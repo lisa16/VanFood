@@ -160,15 +160,6 @@ public class VanFood implements EntryPoint {
 		vendorsFlexTable.setText(0, 1, "Location");  
 		vendorsFlexTable.setText(0, 2, "Add to Favourites");
 
-		// hard-code some vendors for now
-		//		Vendor vendor1 = new Vendor("vendor1name", "vendor1addr", "vendor1food");
-		//		Vendor vendor2 = new Vendor("vendor2name", "vendor2addr", "vendor2food");
-		//		vendors.add(vendor1);
-		//		vendors.add(vendor2);
-		//		for (Vendor v : vendors) {
-		//			addVendor(v);
-		//		}
-
 		//call to service proxy
 		loadVendorList();
 
@@ -326,7 +317,9 @@ public class VanFood implements EntryPoint {
 
 	//remove all data and replace table with new data
 	private void updateTable(Vendor[] result) {
-		vendorsFlexTable.removeAllRows();
+		for (int i=1; vendorsFlexTable.getRowCount() < i; i++ ) {
+			vendorsFlexTable.removeRow(i);
+		}
 		for (Vendor v : result) {
 			addVendor(v);
 		}
