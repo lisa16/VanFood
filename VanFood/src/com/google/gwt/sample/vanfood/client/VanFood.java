@@ -5,22 +5,27 @@ import java.util.ArrayList;
 import com.google.gwt.user.client.ui.HTMLTable.Cell;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Style.Display;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.FormPanel;
+import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
 import com.google.gwt.user.client.ui.HTMLTable;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 /**
@@ -41,6 +46,7 @@ public class VanFood implements EntryPoint {
 	private Anchor signInLink = new Anchor("Sign In");
 	private Anchor signOutLink = new Anchor("Sign Out");
 	public ListBox lb = new ListBox();
+	private VerticalPanel adminPanel = new VerticalPanel();
 
 	/**
 	 * The message displayed to the user when the server cannot be reached or
@@ -80,6 +86,60 @@ public class VanFood implements EntryPoint {
 		loginPanel.add(loginLabel);
 		loginPanel.add(signInLink);
 		RootPanel.get("vendorList").add(loginPanel);
+		Button adminButton = new Button("Sign in as Administrator");
+		adminButton.getElement().setClassName("btn btn-default btn-primary");
+		adminButton.addClickHandler(new AdminButtonHandler());
+		loginPanel.add(adminButton);
+	}
+	
+	private void loadAdminPage(){
+		//ftp://webftp.vancouver.ca/OpenData/xls/new_food_vendor_locations.xls
+		DOM.getElementById("vendorList").getStyle().setDisplay(Display.NONE);
+		// Create a Form Panel
+		final FormPanel form = new FormPanel();
+		final TextBox text = new TextBox();
+
+		Label selectLabel = new Label("Enter URL of file:");
+		Button uploadButton = new Button("Upload File");
+		uploadButton.getElement().setClassName("btn btn-default btn-primary");
+		 //pass action to the form to point to service handling file 
+	      //receiving operation.
+	      form.setAction(text.getValue());
+	   // set form to use the POST method, and multipart MIME encoding.
+	      form.setEncoding(FormPanel.ENCODING_MULTIPART);
+	      form.setMethod(FormPanel.METHOD_POST);
+	      
+	      adminPanel.add(selectLabel);
+	      adminPanel.add(text);
+	      adminPanel.add(uploadButton);
+	      uploadButton.addClickHandler(new ClickHandler(){
+
+			@Override
+			public void onClick(ClickEvent event) {
+				String filename = text.getValue();
+				if(filename.length() == 0){
+					Window.alert("No file Specified!");
+				}
+				else{
+					form.submit();
+				}				
+			}
+	    	  
+	      });
+	      form.addSubmitCompleteHandler(new FormPanel.SubmitCompleteHandler() {
+	          @Override
+	          public void onSubmitComplete(SubmitCompleteEvent event) {
+	             // When the form submission is successfully completed, this 
+	             //event is fired. Assuming the service returned a response 
+	             //of type text/html, we can get the result text here 
+	             Window.alert(event.getResults());				
+	          }
+	       });
+	       adminPanel.setSpacing(10);
+	 	  
+	       // Add form to the root panel.      
+	       form.add(adminPanel);      
+	       RootPanel.get("adminPage").add(form);	      	      
 	}
 
 	private void loadVanFood() {
@@ -212,9 +272,7 @@ public class VanFood implements EntryPoint {
 		@Override
 		public void onChange(ChangeEvent event) {
 			HTMLTable.RowFormatter rf = vendorsFlexTable.getRowFormatter();
-			System.out.println(vendorsFlexTable.getRowCount());
 			for(int r=1; r<vendorsFlexTable.getRowCount();r++){
-				System.out.println(vendorsFlexTable.getRowCount());
 				rf.setStyleName(r, "FlexTable-noHighlight");
 			}
 			int index = lb.getSelectedIndex();
@@ -226,6 +284,16 @@ public class VanFood implements EntryPoint {
 				}				
 			}			
 		}		
+	}
+	
+	class AdminButtonHandler implements ClickHandler{
+
+		@Override
+		public void onClick(ClickEvent event) {
+			loadAdminPage();
+			
+		}
+		
 	}
 }
 
