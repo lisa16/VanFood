@@ -14,6 +14,11 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 
 public class VendorServiceImpl extends RemoteServiceServlet implements VendorService{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 4612809426927175171L;
+
 	public Vendor[] getVendors(){
 	// ArrayList to accomodate a variabe number of vendors and build up the Vendor[]
     ArrayList<Vendor> vendors = new ArrayList<Vendor>();

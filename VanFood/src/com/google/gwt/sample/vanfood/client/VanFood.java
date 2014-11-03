@@ -142,7 +142,9 @@ public class VanFood implements EntryPoint {
 	 	  
 	       // Add form to the root panel.      
 	       form.add(adminPanel);      
-	       RootPanel.get("adminPage").add(form);	      	      
+	       RootPanel.get("adminPage").add(form);
+	       text.setFocus(true);
+	       text.setText("ftp://webftp.vancouver.ca/OpenData/xls/new_food_vendor_locations.xls");
 	}
 
 	private void loadVanFood() {
