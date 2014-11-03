@@ -1,4 +1,4 @@
-package com.google.gwt.sample.vanfood.client;
+package com.google.gwt.sample.vanfood.server;
 
 
 public class Vendor {
@@ -40,6 +40,8 @@ public class Vendor {
 	
 	public boolean isHighlighted(){
 		return this.highlighted;
+	public String toString(){
+		return this.name + ", " + this.address + ",  " + this.foodtype;
 	}
 
 }

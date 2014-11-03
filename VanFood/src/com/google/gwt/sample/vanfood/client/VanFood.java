@@ -27,7 +27,8 @@ import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
-
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
  */
@@ -48,6 +49,8 @@ public class VanFood implements EntryPoint {
 	public ListBox lb = new ListBox();
 	private VerticalPanel adminPanel = new VerticalPanel();
 
+	private VendorServiceAsync ListSvc = GWT.create(VendorService.class);
+	
 	/**
 	 * The message displayed to the user when the server cannot be reached or
 	 * returns an error.
@@ -295,6 +298,30 @@ public class VanFood implements EntryPoint {
 		}
 		
 	}
+	
+	//service proxy 
+	  private void refresVendorList() {
+		    // Initialize the service proxy.
+		    if (ListSvc == null) {
+		    	ListSvc = GWT.create(VendorService.class);
+		    }
+
+		    // Set up the callback object.
+		    AsyncCallback<Vendor[]> callback = new AsyncCallback<Vendor[]>() {
+		      public void onFailure(Throwable caught) {
+		        // TODO: Do something with errors.
+		      }
+
+			@Override
+			public void onSuccess(Vendor[] result) {
+				// TODO Auto-generated method stub
+				
+			}
+		    };
+
+		    // Make the call to the vendor service.
+		    ListSvc.getVendors(  callback);
+		  }
 }
 
 
