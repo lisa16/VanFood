@@ -21,16 +21,24 @@ font-family: Calibri;
 }
 
 /* vendor list header row */
+.vendorList {
+  border: 1px solid black;
+  text-align: left;
+}
+
+
+/* vendor list header row */
 .vendorListHeader {
   background-color: #2062B8;
   color: white;
 }
 
 
-/* Space out vendor info columns */
+/* add borders to vendor info columns */
 .vendorColumn {
-  width:8em; 
+border: 1px solid black;
 }
+
 
 
 /* Space out Map, Table panel */
@@ -88,11 +96,13 @@ border-radius: 10px;
 .FlexTable-Highlight
 {
 	background-color:#FFFF00;
+	border: 1px solid black;
 }
 
 .FlexTable-noHighlight
 {
 	background-color:#FFFFFF;
+	border: 1px solid black;
 }
 
 

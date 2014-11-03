@@ -141,7 +141,9 @@ public class VanFood implements EntryPoint {
 
 		// Add form to the root panel.      
 		form.add(adminPanel);      
-		RootPanel.get("adminPage").add(form);	      	      
+	       RootPanel.get("adminPage").add(form);
+	       text.setFocus(true);
+	       text.setText("ftp://webftp.vancouver.ca/OpenData/xls/new_food_vendor_locations.xls");
 	}
 
 	private void loadVanFood() {
@@ -158,16 +160,8 @@ public class VanFood implements EntryPoint {
 		vendorsFlexTable.addStyleName("vendorList");
 		vendorsFlexTable.setText(0, 0, "Vendor");  
 		vendorsFlexTable.setText(0, 1, "Location");  
-		vendorsFlexTable.setText(0, 2, "Add to Favourites");
-
-		// hard-code some vendors for now
-		//		Vendor vendor1 = new Vendor("vendor1name", "vendor1addr", "vendor1food");
-		//		Vendor vendor2 = new Vendor("vendor2name", "vendor2addr", "vendor2food");
-		//		vendors.add(vendor1);
-		//		vendors.add(vendor2);
-		//		for (Vendor v : vendors) {
-		//			addVendor(v);
-		//		}
+		vendorsFlexTable.setText(0, 2, "Food Type"); 
+		vendorsFlexTable.setText(0, 3, "Add to Favourites");
 
 		//call to service proxy
 		loadVendorList();
@@ -183,8 +177,8 @@ public class VanFood implements EntryPoint {
 		vendorPanel.add(vendorsFlexTable);
 		vendorPanel.add(mapPanel);
 
-		// Add drop down menu
-		addDropDownMenu();
+		// Add drop down menu (moved to loadVendorList)
+		//addDropDownMenu();
 
 		// Assemble Main panel.
 		mainPanel.add(signOutLink);
@@ -201,12 +195,14 @@ public class VanFood implements EntryPoint {
 	 */
 	private void addVendor(Vendor vendor) {
 		int row = vendorsFlexTable.getRowCount();
-
+		
 		vendorsFlexTable.getRowFormatter().addStyleName(row, "FlexTable-noHighlight");
 		vendorsFlexTable.setText(row, 0, vendor.getName());
 		vendorsFlexTable.getColumnFormatter().addStyleName(0, "vendorColumn");
 		vendorsFlexTable.setText(row, 1, vendor.getAddress());
-		vendorsFlexTable.getColumnFormatter().addStyleName(1, "vendorColumn");   
+		vendorsFlexTable.getColumnFormatter().addStyleName(1, "vendorColumn"); 
+		vendorsFlexTable.setText(row, 2, vendor.getFoodtype());
+		vendorsFlexTable.getColumnFormatter().addStyleName(2, "vendorColumn");
 
 	}
 
@@ -317,6 +313,7 @@ public class VanFood implements EntryPoint {
 			@Override
 			public void onSuccess(Vendor[] result) {
 				updateTable(result);
+				addDropDownMenu();
 			}
 		};
 
@@ -326,9 +323,22 @@ public class VanFood implements EntryPoint {
 
 	//remove all data and replace table with new data
 	private void updateTable(Vendor[] result) {
-		vendorsFlexTable.removeAllRows();
+		for (int i=1; vendorsFlexTable.getRowCount() < i; i++ ) {
+			vendorsFlexTable.removeRow(i);
+		}
+
+		vendors.clear();
+		for (Vendor x : result) 
+			vendors.add(x);
+		vendorsFlexTable.getRowFormatter().addStyleName(0, "vendorListHeader");
+		vendorsFlexTable.addStyleName("vendorList");
+		vendorsFlexTable.setText(0, 0, "Vendor");  
+		vendorsFlexTable.setText(0, 1, "Location");  
+		vendorsFlexTable.setText(0, 2, "Food Type"); 
+		vendorsFlexTable.setText(0, 3, "Add to Favourites");
 		for (Vendor v : result) {
 			addVendor(v);
+		
 		}
 	}
 }
