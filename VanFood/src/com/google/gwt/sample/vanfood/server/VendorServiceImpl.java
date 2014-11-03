@@ -21,7 +21,7 @@ public class VendorServiceImpl extends RemoteServiceServlet implements VendorSer
     try
     {
     	// Location of the vendor xls sheet that needs to be parsed
-        FileInputStream file = new FileInputStream(new File("test/new_food_vendor_locations.xls"));
+        FileInputStream file = new FileInputStream(new File("new_food_vendor_locations.xls"));
 
         //Create Workbook instance holding reference to .xls file
         HSSFWorkbook workbook = new HSSFWorkbook(file);

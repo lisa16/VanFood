@@ -20,7 +20,7 @@
 
 	<servlet-mapping>
 		<servlet-name>VendorService</servlet-name>
-		<url-pattern>/VanFood/vendorService</url-pattern>
+		<url-pattern>/vanfood/vendorService</url-pattern>
 	</servlet-mapping>
   
   <!-- Servlets -->

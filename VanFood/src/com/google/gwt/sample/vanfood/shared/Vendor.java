@@ -51,6 +51,7 @@ public class Vendor implements Serializable{
 	public boolean isHighlighted(){
 		return this.highlighted;
 	}
+	
 	public String toString(){
 		return this.name + ", " + this.address + ",  " + this.foodtype;
 	}
