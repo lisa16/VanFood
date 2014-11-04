@@ -28,6 +28,9 @@ import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.i18n.client.DateTimeFormat;
+
+import java.util.Date;  
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
  */
@@ -47,7 +50,7 @@ public class VanFood implements EntryPoint {
 	private Anchor signOutLink = new Anchor("Sign Out");
 	public ListBox lb = new ListBox();
 	private VerticalPanel adminPanel = new VerticalPanel();
-
+	private Label lastUpdatedLabel = new Label();
 	private VendorServiceAsync VendorSvc = GWT.create(VendorService.class);
 
 	/**
@@ -141,9 +144,9 @@ public class VanFood implements EntryPoint {
 
 		// Add form to the root panel.      
 		form.add(adminPanel);      
-	       RootPanel.get("adminPage").add(form);
-	       text.setFocus(true);
-	       text.setText("ftp://webftp.vancouver.ca/OpenData/xls/new_food_vendor_locations.xls");
+		RootPanel.get("adminPage").add(form);
+		text.setFocus(true);
+		text.setText("ftp://webftp.vancouver.ca/OpenData/xls/new_food_vendor_locations.xls");
 	}
 
 	private void loadVanFood() {
@@ -151,9 +154,9 @@ public class VanFood implements EntryPoint {
 		// Set up sign out hyperlink.
 		signOutLink.setHref(loginInfo.getLogoutUrl());
 
+
 		// Create table for vendor data.
 		// Add styles to elements in the stock list table.
-
 		vendorsFlexTable.addClickHandler(userRowCheck);
 
 		vendorsFlexTable.getRowFormatter().addStyleName(0, "vendorListHeader");
@@ -170,6 +173,7 @@ public class VanFood implements EntryPoint {
 		Image map = new Image();
 		map.setUrl("http://maps.googleapis.com/maps/api/staticmap?center=Vancouver,+BC&zoom=12&size=900x500&maptype=roadmap");
 		mapPanel.add(map);
+		mapPanel.addStyleName("map");
 
 		// Assemble table and map panel.
 		mapPanel.addStyleName("addPanel");
@@ -195,7 +199,7 @@ public class VanFood implements EntryPoint {
 	 */
 	private void addVendor(Vendor vendor) {
 		int row = vendorsFlexTable.getRowCount();
-		
+
 		vendorsFlexTable.getRowFormatter().addStyleName(row, "FlexTable-noHighlight");
 		vendorsFlexTable.setText(row, 0, vendor.getName());
 		vendorsFlexTable.getColumnFormatter().addStyleName(0, "vendorColumn");
@@ -218,7 +222,9 @@ public class VanFood implements EntryPoint {
 			}
 		}
 		lb.setVisibleItemCount(1);
+		lb.addStyleName("dropdownMenu");
 		buttonsPanel.add(lb);
+		buttonsPanel.addStyleName("dropdownMenu");
 	}
 
 	private boolean isInMenu(ListBox lb, String foodType){
@@ -244,7 +250,7 @@ public class VanFood implements EntryPoint {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			int rowIndex=-1;
+			int rowIndex=0;
 			if (src!=null)
 				rowIndex = src.getRowIndex();
 			if (rowIndex==0)
@@ -297,6 +303,14 @@ public class VanFood implements EntryPoint {
 
 	}
 
+	
+	private void addTimeStamp(){
+		lastUpdatedLabel.setText("Last update : "  
+				+ DateTimeFormat.getMediumDateTimeFormat().format(new Date()));
+		mainPanel.add(lastUpdatedLabel);
+	}
+	
+	
 	//service proxy 
 	private void loadVendorList() {
 		// Initialize the service proxy.
@@ -314,8 +328,11 @@ public class VanFood implements EntryPoint {
 			public void onSuccess(Vendor[] result) {
 				updateTable(result);
 				addDropDownMenu();
+				addTimeStamp();
 			}
 		};
+
+
 
 		// Make the call to the vendor service.
 		VendorSvc.getVendors(callback);
@@ -338,7 +355,6 @@ public class VanFood implements EntryPoint {
 		vendorsFlexTable.setText(0, 3, "Add to Favourites");
 		for (Vendor v : result) {
 			addVendor(v);
-		
 		}
 	}
 }

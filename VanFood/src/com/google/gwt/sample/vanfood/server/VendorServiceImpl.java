@@ -44,13 +44,19 @@ public class VendorServiceImpl extends RemoteServiceServlet implements VendorSer
             //For each row, get the string values of Columns 3, 4, and 5 - corresponding to cells D, E, and F 
         	try{
                 name = row.getCell(3).getStringCellValue();
-        	}catch(NullPointerException npe){
+                if (name == ""){
+                	name = "Name not available";
+                }
+        	}catch(NullPointerException npen){
         		
              name = "Name not available";
             }
         	
         	try{
                 address = row.getCell(4).getStringCellValue();
+                if (address == ""){
+                	address = "Address not available";
+                }
         	}catch(NullPointerException npe){
         		
              address = "Address not available";
@@ -58,6 +64,9 @@ public class VendorServiceImpl extends RemoteServiceServlet implements VendorSer
         	
         	try{
                 foodtype = row.getCell(5).getStringCellValue();
+                if (foodtype == ""){
+                	foodtype = "Foodtype not available";
+                }
         	}catch(NullPointerException npe){
         		
              foodtype = "Foodtype not available";
