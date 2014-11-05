@@ -186,8 +186,8 @@ public class VanFood implements EntryPoint {
 
 		// Assemble Main panel.
 		mainPanel.add(signOutLink);
-		mainPanel.add(vendorPanel);
 		mainPanel.add(buttonsPanel);
+		mainPanel.add(vendorPanel);
 
 		// Associate the Main panel with the HTML host page.
 		RootPanel.get("vendorList").add(mainPanel);
@@ -307,6 +307,7 @@ public class VanFood implements EntryPoint {
 	private void addTimeStamp(){
 		lastUpdatedLabel.setText("Last update : "  
 				+ DateTimeFormat.getMediumDateTimeFormat().format(new Date()));
+
 		mainPanel.add(lastUpdatedLabel);
 	}
 	

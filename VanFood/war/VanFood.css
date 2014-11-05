@@ -95,7 +95,7 @@ border-radius: 10px;
 
 .FlexTable-Highlight
 {
-	background-color:#FFFF00;
+	background-color:#8fb0db;
 	border: 1px solid black;
 }
 
@@ -103,13 +103,6 @@ border-radius: 10px;
 {
 	background-color:#FFFFFF;
 	border: 1px solid black;
-}
-
-.dropdownMenu
-{
-	position: fixed;
-	top: 10px;
-	right: 10px;
 }
 
 
