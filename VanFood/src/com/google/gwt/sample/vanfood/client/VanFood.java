@@ -26,6 +26,7 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.i18n.client.DateTimeFormat;
@@ -39,6 +40,7 @@ public class VanFood implements EntryPoint {
 	private VerticalPanel mainPanel = new VerticalPanel();
 	private HorizontalPanel vendorPanel = new HorizontalPanel();
 	private FlexTable vendorsFlexTable = new FlexTable();
+	private ScrollPanel vendorsScrollPanel = new ScrollPanel();
 	private VerticalPanel mapPanel = new VerticalPanel();
 	private FlowPanel buttonsPanel = new FlowPanel();
 	private ArrayList<Vendor> vendors = new ArrayList<Vendor>();
@@ -178,7 +180,9 @@ public class VanFood implements EntryPoint {
 		// Assemble table and map panel.
 		mapPanel.addStyleName("addPanel");
 		vendorsFlexTable.addStyleName("addPanel");
-		vendorPanel.add(vendorsFlexTable);
+		vendorsScrollPanel.add(vendorsFlexTable);
+		vendorsScrollPanel.setSize("80em", "50em");  
+		vendorPanel.add(vendorsScrollPanel);
 		vendorPanel.add(mapPanel);
 
 		// Add drop down menu (moved to loadVendorList)
