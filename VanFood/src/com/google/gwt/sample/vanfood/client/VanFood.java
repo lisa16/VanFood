@@ -27,6 +27,7 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.ScrollPanel;
+import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.i18n.client.DateTimeFormat;
@@ -40,7 +41,9 @@ public class VanFood implements EntryPoint {
 	private VerticalPanel mainPanel = new VerticalPanel();
 	private HorizontalPanel vendorPanel = new HorizontalPanel();
 	private FlexTable vendorsFlexTable = new FlexTable();
+	private FlexTable favouritesTable = new FlexTable();
 	private ScrollPanel vendorsScrollPanel = new ScrollPanel();
+	private TabPanel vendorsTabPanel = new TabPanel();
 	private VerticalPanel mapPanel = new VerticalPanel();
 	private FlowPanel buttonsPanel = new FlowPanel();
 	private ArrayList<Vendor> vendors = new ArrayList<Vendor>();
@@ -54,6 +57,7 @@ public class VanFood implements EntryPoint {
 	private VerticalPanel adminPanel = new VerticalPanel();
 	private Label lastUpdatedLabel = new Label();
 	private VendorServiceAsync VendorSvc = GWT.create(VendorService.class);
+	private ArrayList<Vendor> favouriteVendors = new ArrayList<Vendor>();
 
 	/**
 	 * The message displayed to the user when the server cannot be reached or
@@ -99,6 +103,14 @@ public class VanFood implements EntryPoint {
 		loginPanel.add(adminButton);
 	}
 
+	//handles not logged in error
+	private void handleError(Throwable error) {
+		Window.alert(error.getMessage());
+		if (error instanceof NotLoggedInException) {
+			Window.Location.replace(loginInfo.getLogoutUrl());
+		}
+	}
+	
 	private void loadAdminPage(){
 		//ftp://webftp.vancouver.ca/OpenData/xls/new_food_vendor_locations.xls
 		DOM.getElementById("vendorList").getStyle().setDisplay(Display.NONE);
@@ -156,18 +168,26 @@ public class VanFood implements EntryPoint {
 		// Set up sign out hyperlink.
 		signOutLink.setHref(loginInfo.getLogoutUrl());
 
-
+		//highlights row clicked
+		vendorsFlexTable.addClickHandler(userRowCheck);
+		
 		// Create table for vendor data.
 		// Add styles to elements in the stock list table.
-		vendorsFlexTable.addClickHandler(userRowCheck);
-
 		vendorsFlexTable.getRowFormatter().addStyleName(0, "vendorListHeader");
 		vendorsFlexTable.addStyleName("vendorList");
 		vendorsFlexTable.setText(0, 0, "Vendor");  
 		vendorsFlexTable.setText(0, 1, "Location");  
 		vendorsFlexTable.setText(0, 2, "Food Type"); 
 		vendorsFlexTable.setText(0, 3, "Add to Favourites");
-
+		
+		// create table for favourites
+		favouritesTable.getRowFormatter().addStyleName(0, "vendorListHeader");
+		favouritesTable.addStyleName("vendorList");
+		favouritesTable.setText(0, 0, "Vendor");  
+		favouritesTable.setText(0, 1, "Location");  
+		favouritesTable.setText(0, 2, "Food Type"); 
+		favouritesTable.setText(0, 3, "Remove from Favourites");
+		
 		//call to service proxy
 		loadVendorList();
 
@@ -175,18 +195,23 @@ public class VanFood implements EntryPoint {
 		Image map = new Image();
 		map.setUrl("http://maps.googleapis.com/maps/api/staticmap?center=Vancouver,+BC&zoom=12&size=900x500&maptype=roadmap");
 		mapPanel.add(map);
-		mapPanel.addStyleName("map");
-
-		// Assemble table and map panel.
-		mapPanel.addStyleName("addPanel");
-		vendorsFlexTable.addStyleName("addPanel");
+		
+		//create scroll for vendors 
 		vendorsScrollPanel.add(vendorsFlexTable);
-		vendorsScrollPanel.setSize("80em", "50em");  
-		vendorPanel.add(vendorsScrollPanel);
+		vendorsScrollPanel.setSize("45em", "35em");  
+	
+		//create tab area
+		vendorsTabPanel.add(vendorsScrollPanel, "Vendors");
+		vendorsTabPanel.add(favouritesTable, "Favourites");
+		vendorsTabPanel.selectTab(0);
+		
+		// Add margins for map and table.
+		mapPanel.addStyleName("addPanel");
+		vendorsTabPanel.addStyleName("addPanel");
+		
+		//add vendors list and map to main panel to display
+		vendorPanel.add(vendorsTabPanel);
 		vendorPanel.add(mapPanel);
-
-		// Add drop down menu (moved to loadVendorList)
-		//addDropDownMenu();
 
 		// Assemble Main panel.
 		mainPanel.add(signOutLink);
@@ -198,29 +223,12 @@ public class VanFood implements EntryPoint {
 	}
 
 	/**
-	 * Add vendor to FlexTable. 
-	 * Executed at startup.
-	 */
-	private void addVendor(Vendor vendor) {
-		int row = vendorsFlexTable.getRowCount();
-
-		vendorsFlexTable.getRowFormatter().addStyleName(row, "FlexTable-noHighlight");
-		vendorsFlexTable.setText(row, 0, vendor.getName());
-		vendorsFlexTable.getColumnFormatter().addStyleName(0, "vendorColumn");
-		vendorsFlexTable.setText(row, 1, vendor.getAddress());
-		vendorsFlexTable.getColumnFormatter().addStyleName(1, "vendorColumn"); 
-		vendorsFlexTable.setText(row, 2, vendor.getFoodtype());
-		vendorsFlexTable.getColumnFormatter().addStyleName(2, "vendorColumn");
-
-	}
-
-	/**
 	 * Dropdown menu for food descriptions
 	 */
-	private void addDropDownMenu(){
+	private void addDropDownMenu(Vendor[] result){
 		lb.addChangeHandler(new MenuHandler());
 		lb.addItem("Food Descriptions");
-		for(Vendor v: vendors){
+		for(Vendor v: result){
 			if(!isInMenu(lb, v.getFoodtype())){
 				lb.addItem(v.getFoodtype());
 			}
@@ -228,7 +236,6 @@ public class VanFood implements EntryPoint {
 		lb.setVisibleItemCount(1);
 		lb.addStyleName("dropdownMenu");
 		buttonsPanel.add(lb);
-		buttonsPanel.addStyleName("dropdownMenu");
 	}
 
 	private boolean isInMenu(ListBox lb, String foodType){
@@ -238,10 +245,7 @@ public class VanFood implements EntryPoint {
 			}
 		}
 		return false;		
-
 	}
-
-
 
 	// handle clicking on a table row (so a vendor can be selected)
 	ClickHandler userRowCheck = new ClickHandler() {
@@ -270,14 +274,7 @@ public class VanFood implements EntryPoint {
 		}	
 	};
 
-	private void handleError(Throwable error) {
-		Window.alert(error.getMessage());
-		if (error instanceof NotLoggedInException) {
-			Window.Location.replace(loginInfo.getLogoutUrl());
-		}
-	}
-
-
+	// handles drop down menu 
 	class MenuHandler implements ChangeHandler{
 
 		@Override
@@ -307,7 +304,7 @@ public class VanFood implements EntryPoint {
 
 	}
 
-	
+	// last updated time stamp
 	private void addTimeStamp(){
 		lastUpdatedLabel.setText("Last update : "  
 				+ DateTimeFormat.getMediumDateTimeFormat().format(new Date()));
@@ -332,13 +329,10 @@ public class VanFood implements EntryPoint {
 			@Override
 			public void onSuccess(Vendor[] result) {
 				updateTable(result);
-				addDropDownMenu();
+				addDropDownMenu(result);
 				addTimeStamp();
 			}
 		};
-
-
-
 		// Make the call to the vendor service.
 		VendorSvc.getVendors(callback);
 	}
@@ -350,18 +344,56 @@ public class VanFood implements EntryPoint {
 		}
 
 		vendors.clear();
-		for (Vendor x : result) 
-			vendors.add(x);
-		vendorsFlexTable.getRowFormatter().addStyleName(0, "vendorListHeader");
-		vendorsFlexTable.addStyleName("vendorList");
-		vendorsFlexTable.setText(0, 0, "Vendor");  
-		vendorsFlexTable.setText(0, 1, "Location");  
-		vendorsFlexTable.setText(0, 2, "Food Type"); 
-		vendorsFlexTable.setText(0, 3, "Add to Favourites");
+
 		for (Vendor v : result) {
+			//add vendor to array list of vendors
+			vendors.add(v);
+			//display vendor in table
 			addVendor(v);
 		}
 	}
+	
+	// helper function for updateTable
+	private void addVendor(Vendor vendor) {
+		int row = vendorsFlexTable.getRowCount();
+
+		vendorsFlexTable.getRowFormatter().addStyleName(row, "FlexTable-noHighlight");
+		vendorsFlexTable.setText(row, 0, vendor.getName());
+		vendorsFlexTable.getColumnFormatter().addStyleName(0, "vendorColumn");
+		vendorsFlexTable.setText(row, 1, vendor.getAddress());
+		vendorsFlexTable.getColumnFormatter().addStyleName(1, "vendorColumn"); 
+		vendorsFlexTable.setText(row, 2, vendor.getFoodtype());
+		vendorsFlexTable.getColumnFormatter().addStyleName(2, "vendorColumn");
+		
+		Button button = new Button("Favourite!");
+		vendorsFlexTable.setWidget(row, 3, button);
+		button.addClickHandler(favouriteHandler);
+		favouriteVendors.add(vendor);
+	}
+	
+
+
+	// handle clicking on favourite
+	ClickHandler favouriteHandler = new ClickHandler() {
+		@Override
+		public void onClick(ClickEvent event) {
+			Cell src = null;
+			try {
+				src = vendorsFlexTable.getCellForEvent(event);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			int rowIndex=0;
+			if (src!=null)
+				rowIndex = src.getRowIndex();
+			if (rowIndex==0)
+				return;
+			//TODO: how to deal with clicking favourites button??
+			}
+			
+	};
+
 }
 
 
