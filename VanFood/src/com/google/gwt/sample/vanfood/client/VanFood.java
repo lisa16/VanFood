@@ -110,7 +110,7 @@ public class VanFood implements EntryPoint {
 			Window.Location.replace(loginInfo.getLogoutUrl());
 		}
 	}
-	
+
 	private void loadAdminPage(){
 		//ftp://webftp.vancouver.ca/OpenData/xls/new_food_vendor_locations.xls
 		DOM.getElementById("vendorList").getStyle().setDisplay(Display.NONE);
@@ -170,7 +170,7 @@ public class VanFood implements EntryPoint {
 
 		//highlights row clicked
 		vendorsFlexTable.addClickHandler(userRowCheck);
-		
+
 		// Create table for vendor data.
 		// Add styles to elements in the stock list table.
 		vendorsFlexTable.getRowFormatter().addStyleName(0, "vendorListHeader");
@@ -179,7 +179,7 @@ public class VanFood implements EntryPoint {
 		vendorsFlexTable.setText(0, 1, "Location");  
 		vendorsFlexTable.setText(0, 2, "Food Type"); 
 		vendorsFlexTable.setText(0, 3, "Add to Favourites");
-		
+
 		// create table for favourites
 		favouritesTable.getRowFormatter().addStyleName(0, "vendorListHeader");
 		favouritesTable.addStyleName("vendorList");
@@ -187,7 +187,7 @@ public class VanFood implements EntryPoint {
 		favouritesTable.setText(0, 1, "Location");  
 		favouritesTable.setText(0, 2, "Food Type"); 
 		favouritesTable.setText(0, 3, "Remove from Favourites");
-		
+
 		//call to service proxy
 		loadVendorList();
 
@@ -195,20 +195,20 @@ public class VanFood implements EntryPoint {
 		Image map = new Image();
 		map.setUrl("http://maps.googleapis.com/maps/api/staticmap?center=Vancouver,+BC&zoom=12&size=900x500&maptype=roadmap");
 		mapPanel.add(map);
-		
+
 		//create scroll for vendors 
 		vendorsScrollPanel.add(vendorsFlexTable);
 		vendorsScrollPanel.setSize("45em", "35em");  
-	
+
 		//create tab area
 		vendorsTabPanel.add(vendorsScrollPanel, "Vendors");
 		vendorsTabPanel.add(favouritesTable, "Favourites");
 		vendorsTabPanel.selectTab(0);
-		
+
 		// Add margins for map and table.
 		mapPanel.addStyleName("addPanel");
 		vendorsTabPanel.addStyleName("addPanel");
-		
+
 		//add vendors list and map to main panel to display
 		vendorPanel.add(vendorsTabPanel);
 		vendorPanel.add(mapPanel);
@@ -311,8 +311,8 @@ public class VanFood implements EntryPoint {
 
 		mainPanel.add(lastUpdatedLabel);
 	}
-	
-	
+
+
 	//service proxy 
 	private void loadVendorList() {
 		// Initialize the service proxy.
@@ -352,7 +352,7 @@ public class VanFood implements EntryPoint {
 			addVendor(v);
 		}
 	}
-	
+
 	// helper function for updateTable
 	private void addVendor(Vendor vendor) {
 		int row = vendorsFlexTable.getRowCount();
@@ -364,13 +364,13 @@ public class VanFood implements EntryPoint {
 		vendorsFlexTable.getColumnFormatter().addStyleName(1, "vendorColumn"); 
 		vendorsFlexTable.setText(row, 2, vendor.getFoodtype());
 		vendorsFlexTable.getColumnFormatter().addStyleName(2, "vendorColumn");
-		
+
 		Button button = new Button("Favourite!");
 		vendorsFlexTable.setWidget(row, 3, button);
 		button.addClickHandler(favouriteHandler);
 		favouriteVendors.add(vendor);
 	}
-	
+
 
 
 	// handle clicking on favourite
@@ -391,8 +391,8 @@ public class VanFood implements EntryPoint {
 				return;
 			//TODO: how to deal with clicking favourites button??
 			new TwitterPopup(null).show();
-			}
-			
+		}
+
 	};
 
 }
