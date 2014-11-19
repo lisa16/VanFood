@@ -114,13 +114,10 @@ public class VanFood implements EntryPoint {
 			Window.Location.replace(loginInfo.getLogoutUrl());
 		}
 	}
-	
+
 	private void loadContactPage(){
 		DOM.getElementById("vendorList").getStyle().setDisplay(Display.NONE);
 		DOM.getElementById("adminPage").getStyle().setDisplay(Display.NONE);
-		Label emailLabel = new Label("Your e-mail address: ");
-		final TextBox from = new TextBox();
-		from.setText(loginInfo.getEmailAddress());
 		Label subjectLabel = new Label("Subject: ");
 		final TextBox subject= new TextBox();
 		Label msgLabel = new Label("Enter your feedback: ");
@@ -132,38 +129,38 @@ public class VanFood implements EntryPoint {
 
 			@Override
 			public void onClick(ClickEvent event) {
-				final String msgFrom = from.getText();
+				final String msgFrom = loginInfo.getEmailAddress();
 				final String message = msg.getText();
 				final String msgSubject = subject.getText();
-				System.out.println("Submit button clicked");
+				if(msgSubject == ""){
+					Window.alert("There's no subject, please fill it out and press the submit button again!");
+					return;
+				}
+				if(message == ""){
+					Window.alert("There's no message to send, please fill it out and press the submit button again!");
+					return;
+				}
 				mailSvc.sendMail(msgFrom, msgSubject,"miss.lisa7102@gmail.com", message, new AsyncCallback<String>()
-				 {
+						{
 					public void onFailure(Throwable caught) {
-						System.out.println("Didn't work");
-						Window.alert("Didn't work");
+						Window.alert("The message was not sent:( Try again!");
 					}
 
 					@Override
 					public void onSuccess(String result) {
-						System.out.println("Message sent");
-						Window.alert("Message sent");
+						Window.alert("Thank you for the feedback, we will get back to you soon!");
 					}
-				
-				 });
-			}});
-			
 
-		
-		
-		contactPanel.add(emailLabel);
-		contactPanel.add(from);
+						});
+			}});
+
 		contactPanel.add(subjectLabel);
 		contactPanel.add(subject);
 		contactPanel.add(msgLabel);
 		contactPanel.add(msg);
 		contactPanel.add(submitButton);
 		RootPanel.get("contactPage").add(contactPanel);
-			
+
 	}
 
 	private void loadAdminPage(){
@@ -179,7 +176,7 @@ public class VanFood implements EntryPoint {
 			public void onClick(ClickEvent event) {
 
 				VendorSvc.parseVendors(new AsyncCallback<String>()
-				 {
+						{
 					public void onFailure(Throwable caught) {
 						System.out.println("Data NOT parsed/stored!");
 						Window.alert("Data NOT parsed/stored!");
@@ -190,13 +187,13 @@ public class VanFood implements EntryPoint {
 						System.out.println("Data parsed & Stored!");
 						Window.alert("Data parsed & Stored!");
 					}
-				
-				 });
+
+						});
 			}});
-			
 
 
- 
+
+
 		RootPanel.get("adminPage").add(adminPanel);
 	}
 
@@ -236,11 +233,11 @@ public class VanFood implements EntryPoint {
 		//create scroll for vendors 
 		vendorsScrollPanel.add(vendorsFlexTable);
 		vendorsScrollPanel.setSize("45em", "35em");  
-		
+
 		//create scroll for favourites
 		favouritesScrollPanel.add(favouritesTable);
 		favouritesScrollPanel.setSize("45em", "35em");  
-		
+
 		//create tab area
 		vendorsTabPanel.add(vendorsScrollPanel, "Vendors");
 		vendorsTabPanel.add(favouritesScrollPanel, "Favourites");
@@ -258,15 +255,15 @@ public class VanFood implements EntryPoint {
 		Button contactButton = new Button("Contact Us");
 		contactButton.getElement().setClassName("btn btn-default btn-primary");
 		buttonsPanel.add(contactButton);
-	    contactButton.addClickHandler(new ClickHandler(){
+		contactButton.addClickHandler(new ClickHandler(){
 
 			@Override
 			public void onClick(ClickEvent event) {
 				loadContactPage();
-				
+
 			}
-	    	
-	    });
+
+		});
 		// Assemble Main panel.
 		mainPanel.add(signOutLink);
 		mainPanel.add(buttonsPanel);
@@ -483,26 +480,26 @@ public class VanFood implements EntryPoint {
 		}
 
 	};
-	
-	// handle removing favourites
-		ClickHandler RemoveHandler = new ClickHandler() {
-			@Override
-			public void onClick(ClickEvent event) {
-				Cell src = null;
-				try {
-					src = favouritesTable.getCellForEvent(event);
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				int rowIndex=0;
-				if (src!=null)
-					rowIndex = src.getRowIndex();
-				if (rowIndex==0)
-					return;
-			}
 
-		};
+	// handle removing favourites
+	ClickHandler RemoveHandler = new ClickHandler() {
+		@Override
+		public void onClick(ClickEvent event) {
+			Cell src = null;
+			try {
+				src = favouritesTable.getCellForEvent(event);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			int rowIndex=0;
+			if (src!=null)
+				rowIndex = src.getRowIndex();
+			if (rowIndex==0)
+				return;
+		}
+
+	};
 
 
 }
