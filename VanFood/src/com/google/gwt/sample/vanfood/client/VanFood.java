@@ -267,9 +267,19 @@ public class VanFood implements EntryPoint {
 					vendorsFlexTable.getRowFormatter().getStyleName(rowIndex).trim().equals("")) {
 				vendorsFlexTable.getRowFormatter().addStyleName(rowIndex, "FlexTable-Highlight");
 				vendorsFlexTable.getRowFormatter().removeStyleName(rowIndex, "FlexTable-noHighlight");
+				for (Vendor v : vendors) {
+					if (vendorsFlexTable.getText(rowIndex, 0).equalsIgnoreCase(v.getName()) &&
+							vendorsFlexTable.getText(rowIndex, 1).equalsIgnoreCase(v.getAddress())) 
+						v.setHighlighted(true);
+				}
 			} else {
 				vendorsFlexTable.getRowFormatter().addStyleName(rowIndex, "FlexTable-noHighlight");
 				vendorsFlexTable.getRowFormatter().removeStyleName(rowIndex, "FlexTable-Highlight");
+				for (Vendor v : vendors) {
+					if (vendorsFlexTable.getText(rowIndex, 0).equalsIgnoreCase(v.getName()) &&
+							vendorsFlexTable.getText(rowIndex, 1).equalsIgnoreCase(v.getAddress()))
+						v.setHighlighted(false);
+				}
 			}
 		}	
 	};
@@ -283,12 +293,15 @@ public class VanFood implements EntryPoint {
 			for(int r=1; r<vendorsFlexTable.getRowCount();r++){
 				rf.setStyleName(r, "FlexTable-noHighlight");
 			}
+			for (Vendor v : vendors)
+				v.setHighlighted(false);
 			int index = lb.getSelectedIndex();
 			String foodType = lb.getItemText(index);
 			for(int r=0; r<vendors.size(); r++){
 				if(vendors.get(r).getFoodtype().equals(foodType)){
 					int i = (r+1);
 					rf.setStyleName(i, "FlexTable-Highlight");
+					vendors.get(r).setHighlighted(true);
 				}				
 			}			
 		}		
