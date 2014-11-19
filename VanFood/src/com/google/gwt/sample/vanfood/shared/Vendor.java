@@ -28,6 +28,8 @@ public class Vendor implements Serializable{
 	@NotPersistent 
 	private boolean highlighted;
 	
+	
+
 	public Vendor(){
 		
 	}
@@ -36,6 +38,7 @@ public class Vendor implements Serializable{
 		this.setName(name);
 		this.setAddress(address);
 		this.setFoodtype(foodtype);
+		this.highlighted = false;
 	}
 
 	public String getName() {
@@ -60,6 +63,10 @@ public class Vendor implements Serializable{
 
 	public void setFoodtype(String foodtype) {
 		this.foodtype = foodtype;
+	}
+	
+	public void setHighlighted(boolean highlighted) {
+		this.highlighted = highlighted;
 	}
 	
 	public boolean isHighlighted(){

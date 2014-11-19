@@ -164,10 +164,11 @@ public class VendorServiceImpl extends RemoteServiceServlet implements VendorSer
 	        	try{
 	                foodtype = row.getCell(5).getStringCellValue();
 	                if (foodtype == ""){
-	                	foodtype = "Foodtype not available";
+                	foodtype = "Food type not available";
 	                }
 	        	}catch(NullPointerException npe){
 	        		
+             foodtype = "Foodtype not available";
 	            }
 	        	
 	        	
