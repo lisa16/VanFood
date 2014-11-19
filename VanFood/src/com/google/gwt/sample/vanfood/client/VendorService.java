@@ -7,4 +7,5 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 @RemoteServiceRelativePath("vendorService")
 public interface VendorService extends RemoteService {
 	Vendor[] getVendors();
+	String parseVendors();
 }

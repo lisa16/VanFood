@@ -6,4 +6,6 @@ public interface VendorServiceAsync {
 
 	void getVendors(AsyncCallback<Vendor[]> callback);
 
+	void parseVendors(AsyncCallback<String> asyncCallback);
+
 }

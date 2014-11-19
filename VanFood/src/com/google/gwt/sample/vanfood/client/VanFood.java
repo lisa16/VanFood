@@ -27,6 +27,7 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.ScrollPanel;
+import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.i18n.client.DateTimeFormat;
@@ -52,8 +53,10 @@ public class VanFood implements EntryPoint {
 	private Anchor signOutLink = new Anchor("Sign Out");
 	public ListBox lb = new ListBox();
 	private VerticalPanel adminPanel = new VerticalPanel();
+	private VerticalPanel contactPanel = new VerticalPanel();
 	private Label lastUpdatedLabel = new Label();
 	private VendorServiceAsync VendorSvc = GWT.create(VendorService.class);
+	private MailServiceAsync mailSvc = GWT.create(MailService.class);
 
 	/**
 	 * The message displayed to the user when the server cannot be reached or
@@ -98,57 +101,90 @@ public class VanFood implements EntryPoint {
 		adminButton.addClickHandler(new AdminButtonHandler());
 		loginPanel.add(adminButton);
 	}
-
-	private void loadAdminPage(){
-		//ftp://webftp.vancouver.ca/OpenData/xls/new_food_vendor_locations.xls
+	
+	private void loadContactPage(){
 		DOM.getElementById("vendorList").getStyle().setDisplay(Display.NONE);
-		// Create a Form Panel
-		final FormPanel form = new FormPanel();
-		final TextBox text = new TextBox();
-
-		Label selectLabel = new Label("Enter URL of file:");
-		Button uploadButton = new Button("Upload File");
-		uploadButton.getElement().setClassName("btn btn-default btn-primary");
-		//pass action to the form to point to service handling file 
-		//receiving operation.
-		form.setAction(text.getValue());
-		// set form to use the POST method, and multipart MIME encoding.
-		form.setEncoding(FormPanel.ENCODING_MULTIPART);
-		form.setMethod(FormPanel.METHOD_POST);
-
-		adminPanel.add(selectLabel);
-		adminPanel.add(text);
-		adminPanel.add(uploadButton);
-		uploadButton.addClickHandler(new ClickHandler(){
+		DOM.getElementById("adminPage").getStyle().setDisplay(Display.NONE);
+		Label emailLabel = new Label("Your e-mail address: ");
+		final TextBox from = new TextBox();
+		from.setText(loginInfo.getEmailAddress());
+		Label subjectLabel = new Label("Subject: ");
+		final TextBox subject= new TextBox();
+		Label msgLabel = new Label("Enter your feedback: ");
+		final TextArea msg = new TextArea();
+		msg.setPixelSize(300, 200);
+		Button submitButton = new Button("Submit");
+		submitButton.getElement().setClassName("btn btn-default btn-primary");
+		submitButton.addClickHandler(new ClickHandler(){
 
 			@Override
 			public void onClick(ClickEvent event) {
-				String filename = text.getValue();
-				if(filename.length() == 0){
-					Window.alert("No file Specified!");
-				}
-				else{
-					form.submit();
-				}				
-			}
+				final String msgFrom = from.getText();
+				final String message = msg.getText();
+				final String msgSubject = subject.getText();
+				System.out.println("Submit button clicked");
+				mailSvc.sendMail(msgFrom, msgSubject,"miss.lisa7102@gmail.com", message, new AsyncCallback<String>()
+				 {
+					public void onFailure(Throwable caught) {
+						System.out.println("Didn't work");
+						Window.alert("Didn't work");
+					}
 
-		});
-		form.addSubmitCompleteHandler(new FormPanel.SubmitCompleteHandler() {
+					@Override
+					public void onSuccess(String result) {
+						System.out.println("Message sent");
+						Window.alert("Message sent");
+					}
+				
+				 });
+			}});
+			
+
+		
+		
+		contactPanel.add(emailLabel);
+		contactPanel.add(from);
+		contactPanel.add(subjectLabel);
+		contactPanel.add(subject);
+		contactPanel.add(msgLabel);
+		contactPanel.add(msg);
+		contactPanel.add(submitButton);
+		RootPanel.get("contactPage").add(contactPanel);
+			
+	}
+
+	private void loadAdminPage(){
+		DOM.getElementById("vendorList").getStyle().setDisplay(Display.NONE);
+		Button updateButton = new Button("Parse Updated Data");
+		updateButton.getElement().setClassName("btn btn-default btn-primary");
+
+
+		adminPanel.add(updateButton);
+		updateButton.addClickHandler(new ClickHandler(){
+
 			@Override
-			public void onSubmitComplete(SubmitCompleteEvent event) {
-				// When the form submission is successfully completed, this 
-				//event is fired. Assuming the service returned a response 
-				//of type text/html, we can get the result text here 
-				Window.alert(event.getResults());				
-			}
-		});
-		adminPanel.setSpacing(10);
+			public void onClick(ClickEvent event) {
 
-		// Add form to the root panel.      
-		form.add(adminPanel);      
-		RootPanel.get("adminPage").add(form);
-		text.setFocus(true);
-		text.setText("ftp://webftp.vancouver.ca/OpenData/xls/new_food_vendor_locations.xls");
+				VendorSvc.parseVendors(new AsyncCallback<String>()
+				 {
+					public void onFailure(Throwable caught) {
+						System.out.println("Data NOT parsed/stored!");
+						Window.alert("Data NOT parsed/stored!");
+					}
+
+					@Override
+					public void onSuccess(String result) {
+						System.out.println("Data parsed & Stored!");
+						Window.alert("Data parsed & Stored!");
+					}
+				
+				 });
+			}});
+			
+
+
+ 
+		RootPanel.get("adminPage").add(adminPanel);
 	}
 
 	private void loadVanFood() {
@@ -188,6 +224,19 @@ public class VanFood implements EntryPoint {
 		// Add drop down menu (moved to loadVendorList)
 		//addDropDownMenu();
 
+		//add contact us button
+		Button contactButton = new Button("Contact Us");
+		contactButton.getElement().setClassName("btn btn-default btn-primary");
+		buttonsPanel.add(contactButton);
+	    contactButton.addClickHandler(new ClickHandler(){
+
+			@Override
+			public void onClick(ClickEvent event) {
+				loadContactPage();
+				
+			}
+	    	
+	    });
 		// Assemble Main panel.
 		mainPanel.add(signOutLink);
 		mainPanel.add(buttonsPanel);

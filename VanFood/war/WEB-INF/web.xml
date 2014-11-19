@@ -33,5 +33,15 @@ version="2.5" xmlns="http://java.sun.com/xml/ns/javaee">
     <servlet-name>loginService</servlet-name>
     <url-pattern>/vanfood/login</url-pattern>
   </servlet-mapping>
+  
+ <servlet>
+    <servlet-name>MailService</servlet-name>
+    <servlet-class>com.google.gwt.sample.vanfood.server.MailServiceImpl</servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>MailService</servlet-name>
+    <url-pattern>/vanfood/mailService</url-pattern>
+  </servlet-mapping> 
 
 </web-app>

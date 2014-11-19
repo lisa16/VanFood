@@ -2,16 +2,30 @@ package com.google.gwt.sample.vanfood.shared;
 
 import java.io.Serializable;
 
+import javax.jdo.annotations.IdGeneratorStrategy;
+import javax.jdo.annotations.IdentityType;
+import javax.jdo.annotations.NotPersistent;
+import javax.jdo.annotations.PersistenceCapable;
+import javax.jdo.annotations.Persistent;
+import javax.jdo.annotations.PrimaryKey;
 
+@PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class Vendor implements Serializable{
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 7851654394103627831L;
+	@PrimaryKey
+	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
+	private Long id;
+	@Persistent
 	private String name;
+	@Persistent
 	private String address;
+	@Persistent
 	private String foodtype;
+	@NotPersistent 
 	private boolean highlighted;
 	
 	public Vendor(){
