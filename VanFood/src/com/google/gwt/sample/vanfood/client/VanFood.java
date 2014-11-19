@@ -43,6 +43,7 @@ public class VanFood implements EntryPoint {
 	private FlexTable vendorsFlexTable = new FlexTable();
 	private FlexTable favouritesTable = new FlexTable();
 	private ScrollPanel vendorsScrollPanel = new ScrollPanel();
+	private ScrollPanel favouritesScrollPanel = new ScrollPanel();
 	private TabPanel vendorsTabPanel = new TabPanel();
 	private VerticalPanel mapPanel = new VerticalPanel();
 	private FlowPanel buttonsPanel = new FlowPanel();
@@ -178,7 +179,7 @@ public class VanFood implements EntryPoint {
 		vendorsFlexTable.setText(0, 0, "Vendor");  
 		vendorsFlexTable.setText(0, 1, "Location");  
 		vendorsFlexTable.setText(0, 2, "Food Type"); 
-		vendorsFlexTable.setText(0, 3, "Add to Favourites");
+		vendorsFlexTable.setText(0, 3, "Add to Favourite");
 
 		// create table for favourites
 		favouritesTable.getRowFormatter().addStyleName(0, "vendorListHeader");
@@ -186,7 +187,7 @@ public class VanFood implements EntryPoint {
 		favouritesTable.setText(0, 0, "Vendor");  
 		favouritesTable.setText(0, 1, "Location");  
 		favouritesTable.setText(0, 2, "Food Type"); 
-		favouritesTable.setText(0, 3, "Remove from Favourites");
+		favouritesTable.setText(0, 3, "Remove Favourite");
 
 		//call to service proxy
 		loadVendorList();
@@ -199,10 +200,14 @@ public class VanFood implements EntryPoint {
 		//create scroll for vendors 
 		vendorsScrollPanel.add(vendorsFlexTable);
 		vendorsScrollPanel.setSize("45em", "35em");  
-
+		
+		//create scroll for favourites
+		favouritesScrollPanel.add(favouritesTable);
+		favouritesScrollPanel.setSize("45em", "35em");  
+		
 		//create tab area
 		vendorsTabPanel.add(vendorsScrollPanel, "Vendors");
-		vendorsTabPanel.add(favouritesTable, "Favourites");
+		vendorsTabPanel.add(favouritesScrollPanel, "Favourites");
 		vendorsTabPanel.selectTab(0);
 
 		// Add margins for map and table.
@@ -290,8 +295,10 @@ public class VanFood implements EntryPoint {
 		@Override
 		public void onChange(ChangeEvent event) {
 			HTMLTable.RowFormatter rf = vendorsFlexTable.getRowFormatter();
+			HTMLTable.RowFormatter rfFav = favouritesTable.getRowFormatter();
 			for(int r=1; r<vendorsFlexTable.getRowCount();r++){
 				rf.setStyleName(r, "FlexTable-noHighlight");
+				rfFav.setStyleName(r, "FlexTable-noHighlight");
 			}
 			for (Vendor v : vendors)
 				v.setHighlighted(false);
@@ -301,6 +308,7 @@ public class VanFood implements EntryPoint {
 				if(vendors.get(r).getFoodtype().equals(foodType)){
 					int i = (r+1);
 					rf.setStyleName(i, "FlexTable-Highlight");
+					rfFav.setStyleName(i, "FlexTable-Highlight");
 					vendors.get(r).setHighlighted(true);
 				}				
 			}			
@@ -344,6 +352,11 @@ public class VanFood implements EntryPoint {
 				updateTable(result);
 				addDropDownMenu(result);
 				addTimeStamp();
+				// to be relaced with actual favourites list
+				for (Vendor v : result) {
+					addFavourites (v);
+				}
+				//
 			}
 		};
 		// Make the call to the vendor service.
@@ -378,13 +391,27 @@ public class VanFood implements EntryPoint {
 		vendorsFlexTable.setText(row, 2, vendor.getFoodtype());
 		vendorsFlexTable.getColumnFormatter().addStyleName(2, "vendorColumn");
 
-		Button button = new Button("Favourite!");
+		Button button = new Button("Favourite");
 		vendorsFlexTable.setWidget(row, 3, button);
 		button.addClickHandler(favouriteHandler);
 		favouriteVendors.add(vendor);
 	}
 
+	private void addFavourites (Vendor vendor) {
+		int row = favouritesTable.getRowCount();
 
+		favouritesTable.getRowFormatter().addStyleName(row, "FlexTable-noHighlight");
+		favouritesTable.setText(row, 0, vendor.getName());
+		favouritesTable.getColumnFormatter().addStyleName(0, "vendorColumn");
+		favouritesTable.setText(row, 1, vendor.getAddress());
+		favouritesTable.getColumnFormatter().addStyleName(1, "vendorColumn"); 
+		favouritesTable.setText(row, 2, vendor.getFoodtype());
+		favouritesTable.getColumnFormatter().addStyleName(2, "vendorColumn");
+
+		Button button = new Button("Remove!!");
+		favouritesTable.setWidget(row, 3, button);
+		button.addClickHandler(RemoveHandler);
+	}
 
 	// handle clicking on favourite
 	ClickHandler favouriteHandler = new ClickHandler() {
@@ -407,6 +434,27 @@ public class VanFood implements EntryPoint {
 		}
 
 	};
+	
+	// handle removing favourites
+		ClickHandler RemoveHandler = new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
+				Cell src = null;
+				try {
+					src = favouritesTable.getCellForEvent(event);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				int rowIndex=0;
+				if (src!=null)
+					rowIndex = src.getRowIndex();
+				if (rowIndex==0)
+					return;
+			}
+
+		};
+
 
 }
 
