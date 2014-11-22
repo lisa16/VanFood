@@ -1,52 +1,62 @@
-package com.google.gwt.sample.vanfood.server;
+package com.google.gwt.sample.vanfood.server.tests;
+
+import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.List;
-
-import com.google.gwt.sample.vanfood.client.VendorService;
-import com.google.gwt.sample.vanfood.shared.Vendor;
-import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.commons.io.FileUtils;
+import org.junit.Before;
+import org.junit.Test;
 
-import java.io.IOException;
-import java.net.URL;
-import java.net.URLConnection;
+import com.google.gwt.sample.vanfood.shared.Vendor;
 
-import javax.jdo.JDOHelper;
-import javax.jdo.PersistenceManager;
-import javax.jdo.PersistenceManagerFactory;
-import javax.jdo.Query;
+public class TestVendorServiceImpl {
 
-public class VendorServiceImpl extends RemoteServiceServlet implements VendorService{
+	private ArrayList<Vendor> vendors;
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 4612809426927175171L;
-	private static final PersistenceManagerFactory PMF =
-			JDOHelper.getPersistenceManagerFactory("transactions-optional");
+	@Before
+	public void beforeTests(){
+		vendors = getVendorsTest();	
+		
+	}
+	
+	
+	
+	@Test
+	public void testSize() {
+		assertEquals(vendors.size(), 111);
 
-	public String parseVendors(){
+	}
+	
+	@Test
+	public void testLatLons(){
+		for(Vendor v: vendors){
+			assertTrue(v.getLat() < 51);
+			assertTrue(v.getLon()< -123);
+			assertTrue(v.getLon() > -124);
 
-		PersistenceManager pm = getPersistenceManager();
-		Query q = pm.newQuery(Vendor.class);
-		List<Vendor> results = (List<Vendor>) q.execute();
-		for(Vendor v: results){
-			pm.deletePersistent(v);
 		}
-
+		
+	}
+	
+	@Test
+	public void testName(){
+		assertEquals(vendors.get(2).getName(), "Holy Perogy");
+	}
+	
+	// Make sure this method stays updated to reflect actual parser used in application 
+	// Find it at VendorServiceImpl.parseVendors()
+	public ArrayList<Vendor> getVendorsTest(){
+		ArrayList<Vendor> vendors1 = new ArrayList<Vendor>();
 		try
 		{
 
 			// Location of the vendor xls sheet that needs to be parsed
-			FileInputStream file = new FileInputStream(new File("new_food_vendor_locations.xls"));
+			FileInputStream file = new FileInputStream(new File("test/new_food_vendor_locations.xls"));
 
 			//Create Workbook instance holding reference to .xls file
 			HSSFWorkbook workbook = new HSSFWorkbook(file);
@@ -114,47 +124,19 @@ public class VendorServiceImpl extends RemoteServiceServlet implements VendorSer
 				// Create Vendor object from information in the row
 
 				Vendor vendor = new Vendor(name, address, foodtype, lat, lon);
-				pm.makePersistent(vendor);
+				vendors1.add(vendor);
 
 			}
 
 			file.close();
+
 		} 
 		catch (Exception e) 
 		{
 			e.printStackTrace();
 		}
-
-		finally{
-			pm.close();
-		}
-		return ("Data parsed & stored!");
+		return vendors1;
 
 	}
-
-	public Vendor[] getVendors(){
-		// ArrayList to accomodate a variabe number of vendors and build up the Vendor[]
-		ArrayList<Vendor> vendors = new ArrayList<Vendor>();
-		PersistenceManager pm = getPersistenceManager();
-
-		try{
-			Query q = pm.newQuery(Vendor.class);
-			List<Vendor> results = (List<Vendor>) q.execute();
-			for(Vendor v: results){
-				vendors.add(v);
-			}
-
-		}
-		finally{
-			pm.close();
-		}
-		//Transform the vendors ArrayList into an array to match return value
-		return vendors.toArray(new Vendor[vendors.size()]);
-	}
-
-	private PersistenceManager getPersistenceManager() {
-		return PMF.getPersistenceManager();
-	}
-
 
 }
