@@ -99,7 +99,7 @@ public class VendorServiceImpl extends RemoteServiceServlet implements VendorSer
 					
 				}catch(NullPointerException npe){
 
-					lat = 0;
+					lat = 90;
 				}
 				
 				try{
@@ -107,7 +107,7 @@ public class VendorServiceImpl extends RemoteServiceServlet implements VendorSer
 					
 				}catch(NullPointerException npe){
 
-					lon = 0;
+					lon = 90;
 				}
 
 

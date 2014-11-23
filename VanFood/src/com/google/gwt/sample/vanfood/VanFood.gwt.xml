@@ -19,6 +19,7 @@
 
   <!-- Other module inherits                                      -->
 
+   <inherits name='com.google.gwt.maps.GoogleMaps' />
   <!-- Specify the app entry point class.                         -->
   <entry-point class='com.google.gwt.sample.vanfood.client.VanFood'/>
 

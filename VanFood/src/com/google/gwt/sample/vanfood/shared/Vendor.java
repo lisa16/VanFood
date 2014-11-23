@@ -59,12 +59,12 @@ public class Vendor implements Serializable{
 	
 	
 	private void setLon(double lon) {
-this.lon = lon;
+		this.lon = lon;
 		
 	}
 
 	private void setLat(double lat) {
-this.lat = lon;		
+		this.lat = lat;		
 	}
 
 	public String getName() {
@@ -100,7 +100,7 @@ this.lat = lon;
 	}
 	
 	public String toString(){
-		return this.name + ", " + this.address + ",  " + this.foodtype + lat + lon;
+		return this.name + ", " + this.address + ",  " + this.foodtype + " " + this.getLat() + " " + this.getLon();
 	}
 
 }
