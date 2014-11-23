@@ -2,6 +2,7 @@ package com.google.gwt.sample.vanfood.client;
 
 import java.util.ArrayList;
 
+import com.google.gwt.sample.vanfood.server.Favourite;
 import com.google.gwt.sample.vanfood.shared.Vendor;
 import com.google.gwt.user.client.ui.HTMLTable.Cell;
 import com.google.gwt.core.client.EntryPoint;
@@ -62,7 +63,9 @@ public class VanFood implements EntryPoint {
 	private VendorServiceAsync VendorSvc = GWT.create(VendorService.class);
 	private MailServiceAsync mailSvc = GWT.create(MailService.class);
 	private ArrayList<Vendor> favouriteVendors = new ArrayList<Vendor>();
-
+	
+	private final FavouriteServiceAsync favouriteService = GWT.create(FavouriteService.class);
+	
 	/**
 	 * The message displayed to the user when the server cannot be reached or
 	 * returns an error.
@@ -227,6 +230,7 @@ public class VanFood implements EntryPoint {
 
 		//call to service proxy
 		loadVendorList();
+		loadFavouritesList();
 
 		// hard-code a random map for now
 		Image map = new Image();
@@ -398,38 +402,52 @@ public class VanFood implements EntryPoint {
 
 			@Override
 			public void onSuccess(Vendor[] result) {
-				updateTable(result);
+				displayVendors(result);
 				addDropDownMenu(result);
 				addTimeStamp();
-				// to be relaced with actual favourites list
-				for (Vendor v : result) {
-					addFavourites (v);
-				}
-				//
 			}
 		};
 		// Make the call to the vendor service.
 		VendorSvc.getVendors(callback);
 	}
 
-	//remove all data and replace table with new data
-	private void updateTable(Vendor[] result) {
+	private void loadFavouritesList() {
+		favouriteService.getFavourite(new AsyncCallback<Vendor[]>() {
+			public void onFailure (Throwable error) { }
+			@Override
+			public void onSuccess(Vendor[] result) {
+				displayFavourites(result);
+				
+			}
+			
+		});
+	}
+
+	//remove all data and display vendor table with new data
+	private void displayVendors(Vendor[] vendor) {
 		for (int i=1; vendorsFlexTable.getRowCount() < i; i++ ) {
 			vendorsFlexTable.removeRow(i);
 		}
 
 		vendors.clear();
 
-		for (Vendor v : result) {
+		for (Vendor v : vendor) {
 			//add vendor to array list of vendors
 			vendors.add(v);
 			//display vendor in table
 			addVendor(v);
 		}
 	}
+	
+	//display favourites table
+	private void displayFavourites(Vendor[] result) {
+		for (Vendor favourite: result) {
+			displayFavourites(favourite);
+		}
+	}
 
-	// helper function for updateTable
-	private void addVendor(Vendor vendor) {
+	// helper function for displayVendors
+	private void addVendor(final Vendor vendor) {
 		int row = vendorsFlexTable.getRowCount();
 
 		vendorsFlexTable.getRowFormatter().addStyleName(row, "FlexTable-noHighlight");
@@ -440,13 +458,41 @@ public class VanFood implements EntryPoint {
 		vendorsFlexTable.setText(row, 2, vendor.getFoodtype());
 		vendorsFlexTable.getColumnFormatter().addStyleName(2, "vendorColumn");
 
-		Button button = new Button("Favourite");
-		vendorsFlexTable.setWidget(row, 3, button);
-		button.addClickHandler(favouriteHandler);
-		favouriteVendors.add(vendor);
+		// Add a button to add this vendor to favourites
+		Button favouriteButton = new Button("Favourite");
+		vendorsFlexTable.setWidget(row, 3, favouriteButton);
+		favouriteButton.addClickHandler(new ClickHandler() {
+		      public void onClick(ClickEvent event) {
+		    	  new TwitterPopup(null).show();
+		    	  addFavourites(vendor);
+		      }
+	});
 	}
 
-	private void addFavourites (Vendor vendor) {
+	private void addFavourites(Vendor vendor){
+		//don't add vendor if it's already in the list of favourites
+		if (favouriteVendors.contains(vendor))
+			return;
+		
+		displayFavourites(vendor);
+	}
+	
+//	private void addFavourites(final Vendor vendor){
+//		favouriteService.addFavourite(vendor, new AsyncCallback<Void>(){
+//			public void onFailure(Throwable error) {
+//			}
+//			public void onSuccess(Void ignore) {
+//				//don't add vendor if it's already in the list of favourites
+//				if (favouriteVendors.contains(vendor))
+//					return;
+//
+//				displayFavourites(vendor);
+//			}
+//		});
+//	}
+	
+	// helper function for displayFavourites
+	private void displayFavourites (final Vendor vendor) {
 		int row = favouritesTable.getRowCount();
 
 		favouritesTable.getRowFormatter().addStyleName(row, "FlexTable-noHighlight");
@@ -462,29 +508,9 @@ public class VanFood implements EntryPoint {
 		button.addClickHandler(RemoveHandler);
 	}
 
-	// handle clicking on favourite
-	ClickHandler favouriteHandler = new ClickHandler() {
-		@Override
-		public void onClick(ClickEvent event) {
-			Cell src = null;
-			try {
-				src = vendorsFlexTable.getCellForEvent(event);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			int rowIndex=0;
-			if (src!=null)
-				rowIndex = src.getRowIndex();
-			if (rowIndex==0)
-				return;
-			//TODO: how to deal with clicking favourites button??
-			new TwitterPopup(null).show();
-		}
-
-	};
 	
-	// handle removing favourites
+	
+	// handle removing favourites on favourites table
 		ClickHandler RemoveHandler = new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {

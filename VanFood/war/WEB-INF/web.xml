@@ -16,14 +16,11 @@ version="2.5" xmlns="http://java.sun.com/xml/ns/javaee">
 		<servlet-class>com.google.gwt.sample.vanfood.server.VendorServiceImpl</servlet-class>
 	</servlet>
 
-
-
 	<servlet-mapping>
 		<servlet-name>VendorService</servlet-name>
 		<url-pattern>/vanfood/vendorService</url-pattern>
 	</servlet-mapping>
   
-  <!-- Servlets -->
  <servlet>
     <servlet-name>loginService</servlet-name>
     <servlet-class>com.google.gwt.sample.vanfood.server.LoginServiceImpl</servlet-class>
@@ -43,5 +40,15 @@ version="2.5" xmlns="http://java.sun.com/xml/ns/javaee">
     <servlet-name>MailService</servlet-name>
     <url-pattern>/vanfood/mailService</url-pattern>
   </servlet-mapping> 
+  
+  <servlet>
+  <servlet-name>favouriteService</servlet-name>
+    <servlet-class>com.google.gwt.sample.vanfood.server.FavouriteServiceImpl</servlet-class>
+  </servlet>
+  
+  <servlet-mapping>
+    <servlet-name>favouriteService</servlet-name>
+    <url-pattern>/vanfood/favourite</url-pattern>
+  </servlet-mapping>
 
 </web-app>

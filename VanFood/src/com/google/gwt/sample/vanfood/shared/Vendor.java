@@ -77,4 +77,8 @@ public class Vendor implements Serializable{
 		return this.name + ", " + this.address + ",  " + this.foodtype;
 	}
 
+	public Vendor getVendor() {
+		return this;
+	}
+
 }
