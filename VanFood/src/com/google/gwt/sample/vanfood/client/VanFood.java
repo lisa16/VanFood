@@ -63,9 +63,9 @@ public class VanFood implements EntryPoint {
 	private VendorServiceAsync VendorSvc = GWT.create(VendorService.class);
 	private MailServiceAsync mailSvc = GWT.create(MailService.class);
 	private ArrayList<Vendor> favouriteVendors = new ArrayList<Vendor>();
-	
+
 	private final FavouriteServiceAsync favouriteService = GWT.create(FavouriteService.class);
-	
+
 	/**
 	 * The message displayed to the user when the server cannot be reached or
 	 * returns an error.
@@ -117,7 +117,7 @@ public class VanFood implements EntryPoint {
 			Window.Location.replace(loginInfo.getLogoutUrl());
 		}
 	}
-	
+
 	private void loadContactPage(){
 		DOM.getElementById("vendorList").getStyle().setDisplay(Display.NONE);
 		DOM.getElementById("adminPage").getStyle().setDisplay(Display.NONE);
@@ -140,7 +140,7 @@ public class VanFood implements EntryPoint {
 				final String msgSubject = subject.getText();
 				System.out.println("Submit button clicked");
 				mailSvc.sendMail(msgFrom, msgSubject,"miss.lisa7102@gmail.com", message, new AsyncCallback<String>()
-				 {
+						{
 					public void onFailure(Throwable caught) {
 						System.out.println("Didn't work");
 						Window.alert("Didn't work");
@@ -151,13 +151,13 @@ public class VanFood implements EntryPoint {
 						System.out.println("Message sent");
 						Window.alert("Message sent");
 					}
-				
-				 });
-			}});
-			
 
-		
-		
+						});
+			}});
+
+
+
+
 		contactPanel.add(emailLabel);
 		contactPanel.add(from);
 		contactPanel.add(subjectLabel);
@@ -166,7 +166,7 @@ public class VanFood implements EntryPoint {
 		contactPanel.add(msg);
 		contactPanel.add(submitButton);
 		RootPanel.get("contactPage").add(contactPanel);
-			
+
 	}
 
 	private void loadAdminPage(){
@@ -182,7 +182,7 @@ public class VanFood implements EntryPoint {
 			public void onClick(ClickEvent event) {
 
 				VendorSvc.parseVendors(new AsyncCallback<String>()
-				 {
+						{
 					public void onFailure(Throwable caught) {
 						System.out.println("Data NOT parsed/stored!");
 						Window.alert("Data NOT parsed/stored!");
@@ -193,13 +193,13 @@ public class VanFood implements EntryPoint {
 						System.out.println("Data parsed & Stored!");
 						Window.alert("Data parsed & Stored!");
 					}
-				
-				 });
+
+						});
 			}});
-			
 
 
- 
+
+
 		RootPanel.get("adminPage").add(adminPanel);
 	}
 
@@ -240,11 +240,11 @@ public class VanFood implements EntryPoint {
 		//create scroll for vendors 
 		vendorsScrollPanel.add(vendorsFlexTable);
 		vendorsScrollPanel.setSize("45em", "35em");  
-		
+
 		//create scroll for favourites
 		favouritesScrollPanel.add(favouritesTable);
 		favouritesScrollPanel.setSize("45em", "35em");  
-		
+
 		//create tab area
 		vendorsTabPanel.add(vendorsScrollPanel, "Vendors");
 		vendorsTabPanel.add(favouritesScrollPanel, "Favourites");
@@ -262,15 +262,15 @@ public class VanFood implements EntryPoint {
 		Button contactButton = new Button("Contact Us");
 		contactButton.getElement().setClassName("btn btn-default btn-primary");
 		buttonsPanel.add(contactButton);
-	    contactButton.addClickHandler(new ClickHandler(){
+		contactButton.addClickHandler(new ClickHandler(){
 
 			@Override
 			public void onClick(ClickEvent event) {
 				loadContactPage();
-				
+
 			}
-	    	
-	    });
+
+		});
 		// Assemble Main panel.
 		mainPanel.add(signOutLink);
 		mainPanel.add(buttonsPanel);
@@ -417,32 +417,32 @@ public class VanFood implements EntryPoint {
 			@Override
 			public void onSuccess(Vendor[] result) {
 				displayFavourites(result);
-				
+
 			}
-			
+
 		});
 	}
 
 	//remove all data and display vendor table with new data
-	private void displayVendors(Vendor[] vendor) {
+	private void displayVendors(Vendor[] result) {
 		for (int i=1; vendorsFlexTable.getRowCount() < i; i++ ) {
 			vendorsFlexTable.removeRow(i);
 		}
 
 		vendors.clear();
 
-		for (Vendor v : vendor) {
+		for (Vendor v : result) {
 			//add vendor to array list of vendors
 			vendors.add(v);
 			//display vendor in table
 			addVendor(v);
 		}
 	}
-	
+
 	//display favourites table
 	private void displayFavourites(Vendor[] result) {
-		for (Vendor favourite: result) {
-			displayFavourites(favourite);
+		for (Vendor vendor: result) {
+			displayFavourites(vendor);
 		}
 	}
 
@@ -462,38 +462,33 @@ public class VanFood implements EntryPoint {
 		Button favouriteButton = new Button("Favourite");
 		vendorsFlexTable.setWidget(row, 3, favouriteButton);
 		favouriteButton.addClickHandler(new ClickHandler() {
-		      public void onClick(ClickEvent event) {
-		    	  new TwitterPopup(null).show();
-		    	  addFavourites(vendor);
-		      }
-	});
+			public void onClick(ClickEvent event) {
+				new TwitterPopup(null).show();
+				addFavourites(vendor);
+			}
+		});
 	}
 
 	private void addFavourites(Vendor vendor){
 		//don't add vendor if it's already in the list of favourites
 		if (favouriteVendors.contains(vendor))
 			return;
-		
-		displayFavourites(vendor);
+		addFavourite(vendor);
 	}
-	
-//	private void addFavourites(final Vendor vendor){
-//		favouriteService.addFavourite(vendor, new AsyncCallback<Void>(){
-//			public void onFailure(Throwable error) {
-//			}
-//			public void onSuccess(Void ignore) {
-//				//don't add vendor if it's already in the list of favourites
-//				if (favouriteVendors.contains(vendor))
-//					return;
-//
-//				displayFavourites(vendor);
-//			}
-//		});
-//	}
-	
-	// helper function for displayFavourites
+
+	private void addFavourite(final Vendor vendor){
+		//	favouriteService.addFavourite(vendor, new AsyncCallback<Void>(){
+		//		public void onFailure(Throwable error) {
+		//		}
+		//		public void onSuccess(Void ignore) {
+		displayFavourites(vendor);
+		//		}
+		//	});
+	}
+
 	private void displayFavourites (final Vendor vendor) {
 		int row = favouritesTable.getRowCount();
+		favouriteVendors.add(vendor);
 
 		favouritesTable.getRowFormatter().addStyleName(row, "FlexTable-noHighlight");
 		favouritesTable.setText(row, 0, vendor.getName());
@@ -503,34 +498,16 @@ public class VanFood implements EntryPoint {
 		favouritesTable.setText(row, 2, vendor.getFoodtype());
 		favouritesTable.getColumnFormatter().addStyleName(2, "vendorColumn");
 
-		Button button = new Button("Remove!!");
-		favouritesTable.setWidget(row, 3, button);
-		button.addClickHandler(RemoveHandler);
-	}
-
-	
-	
-	// handle removing favourites on favourites table
-		ClickHandler RemoveHandler = new ClickHandler() {
-			@Override
+		Button removeButton = new Button("Remove!!");
+		favouritesTable.setWidget(row, 3, removeButton);
+		removeButton.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
-				Cell src = null;
-				try {
-					src = favouritesTable.getCellForEvent(event);
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				int rowIndex=0;
-				if (src!=null)
-					rowIndex = src.getRowIndex();
-				if (rowIndex==0)
-					return;
+				int removedIndex = favouriteVendors.indexOf(vendor);
+				favouriteVendors.remove(removedIndex);
+				favouritesTable.removeRow(removedIndex);
 			}
-
-		};
-
-
+		});
+	}
 }
 
 
