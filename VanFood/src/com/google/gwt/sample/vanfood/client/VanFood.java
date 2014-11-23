@@ -417,7 +417,6 @@ public class VanFood implements EntryPoint {
 			@Override
 			public void onSuccess(Vendor[] result) {
 				displayFavourites(result);
-
 			}
 
 		});
@@ -477,13 +476,13 @@ public class VanFood implements EntryPoint {
 	}
 
 	private void addFavourite(final Vendor vendor){
-		//	favouriteService.addFavourite(vendor, new AsyncCallback<Void>(){
-		//		public void onFailure(Throwable error) {
-		//		}
-		//		public void onSuccess(Void ignore) {
-		displayFavourites(vendor);
-		//		}
-		//	});
+//		favouriteService.addFavourite(vendor, new AsyncCallback<Void>(){
+//			public void onFailure(Throwable error) {
+//			}
+//			public void onSuccess(Void ignore) {
+				displayFavourites(vendor);
+//			}
+//		});
 	}
 
 	private void displayFavourites (final Vendor vendor) {
@@ -502,13 +501,28 @@ public class VanFood implements EntryPoint {
 		favouritesTable.setWidget(row, 3, removeButton);
 		removeButton.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
-				int removedIndex = favouriteVendors.indexOf(vendor);
-				favouriteVendors.remove(removedIndex);
-				favouritesTable.removeRow(removedIndex);
+				removeFavourite(vendor);
 			}
 		});
 	}
+
+	private void removeFavourite(final Vendor vendor) {
+//		favouriteService.removeFavourite(vendor, new AsyncCallback<Void>(){
+//			public void onFailure(Throwable error) {
+//			}
+//			public void onSuccess(Void ignore) {
+				undisplayFavourite(vendor);
+//			}
+//		});
+	}
+
+	private void undisplayFavourite(Vendor vendor) {
+		int removedIndex = favouriteVendors.indexOf(vendor);
+		favouriteVendors.remove(removedIndex);
+		favouritesTable.removeRow(removedIndex +1);
+	}
 }
+
 
 
 
