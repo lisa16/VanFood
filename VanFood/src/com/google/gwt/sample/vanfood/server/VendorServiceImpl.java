@@ -60,6 +60,13 @@ public class VendorServiceImpl extends RemoteServiceServlet implements VendorSer
 				String foodtype;
 				double lat;
 				double lon;
+				
+				String status = row.getCell(2).getStringCellValue();
+				if (status.trim().equals("pending")) {
+					continue;
+				}
+					
+				
 				//For each row, get the string values of Columns 3, 4, and 5 - corresponding to cells D, E, and F 
 				try{
 					name = row.getCell(3).getStringCellValue();
