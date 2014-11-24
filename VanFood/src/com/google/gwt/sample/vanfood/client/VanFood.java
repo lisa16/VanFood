@@ -402,7 +402,7 @@ public class VanFood implements EntryPoint {
 	// last updated time stamp
 	private void addTimeStamp(){
 		lastUpdatedLabel.setText("Last update : "  
-				+ DateTimeFormat.getMediumDateTimeFormat().format(new Date()));
+				+ DateTimeFormat.getFormat(DateTimeFormat.PredefinedFormat.DATE_TIME_MEDIUM).format(new Date()));
 
 		mainPanel.add(lastUpdatedLabel);
 	}
