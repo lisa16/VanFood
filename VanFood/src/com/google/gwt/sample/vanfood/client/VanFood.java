@@ -504,7 +504,7 @@ public class VanFood implements EntryPoint {
 			if (rowIndex==0)
 				return;
 			//TODO: how to deal with clicking favourites button??
-			new TwitterPopup(null).show();
+			new TwitterPopup(vendors.get(rowIndex-1)).show();
 		}
 
 	};
