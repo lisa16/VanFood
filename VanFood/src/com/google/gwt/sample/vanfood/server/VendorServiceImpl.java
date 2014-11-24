@@ -29,7 +29,7 @@ public class VendorServiceImpl extends RemoteServiceServlet implements VendorSer
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 4612809426927175171L;
+	
 	private static final PersistenceManagerFactory PMF =
 			JDOHelper.getPersistenceManagerFactory("transactions-optional");
 
@@ -37,10 +37,7 @@ public class VendorServiceImpl extends RemoteServiceServlet implements VendorSer
 
 		PersistenceManager pm = getPersistenceManager();
 		Query q = pm.newQuery(Vendor.class);
-		List<Vendor> results = (List<Vendor>) q.execute();
-		for(Vendor v: results){
-			pm.deletePersistent(v);
-		}
+		q.deletePersistentAll();
 
 		try
 		{

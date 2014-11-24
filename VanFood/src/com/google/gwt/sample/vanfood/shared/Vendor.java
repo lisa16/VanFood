@@ -15,7 +15,7 @@ public class Vendor implements Serializable{
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 7851654394103627831L;
+	
 	@PrimaryKey
 	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
 	private Long id;
@@ -45,6 +45,7 @@ public class Vendor implements Serializable{
 		highlighted = false;
 		setLat(lat);
 		setLon(lon);
+		
 		
 	}
 	
