@@ -204,7 +204,6 @@ public class VendorServiceImpl extends RemoteServiceServlet implements VendorSer
 	    	for(Vendor v: results){
 	    		vendors.add(v);
 	    	}
-	    	
 	    }
 	    finally{
 	    	pm.close();

@@ -80,5 +80,9 @@ public class Vendor implements Serializable{
 	public Vendor getVendor() {
 		return this;
 	}
+	
+	public long getVendorID() {
+		return id;
+	}
 
 }

@@ -485,7 +485,6 @@ public class VanFood implements EntryPoint {
 				handleError(error);	
 			}
 			public void onSuccess(Void ignore) {
-			
 				displayFavourites(vendor);
 			}
 		});
