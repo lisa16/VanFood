@@ -63,7 +63,6 @@ public class VanFood implements EntryPoint {
 	private VendorServiceAsync VendorSvc = GWT.create(VendorService.class);
 	private MailServiceAsync mailSvc = GWT.create(MailService.class);
 	private ArrayList<Vendor> favouriteVendors = new ArrayList<Vendor>();
-
 	private final FavouriteServiceAsync favouriteService = GWT.create(FavouriteService.class);
 
 	/**
@@ -248,7 +247,7 @@ public class VanFood implements EntryPoint {
 		//create tab area
 		vendorsTabPanel.add(vendorsScrollPanel, "Vendors");
 		vendorsTabPanel.add(favouritesScrollPanel, "Favourites");
-		vendorsTabPanel.selectTab(0);
+		vendorsTabPanel.selectTab(1);
 
 		// Add margins for map and table.
 		mapPanel.addStyleName("addPanel");
@@ -387,6 +386,7 @@ public class VanFood implements EntryPoint {
 	}
 
 
+	//------------------------- Vendors Table Starts ---------------
 	//service proxy 
 	private void loadVendorList() {
 		// Initialize the service proxy.
@@ -394,60 +394,42 @@ public class VanFood implements EntryPoint {
 			VendorSvc = GWT.create(VendorService.class);
 		}
 
-		// Set up the callback object.
-		AsyncCallback<Vendor[]> callback = new AsyncCallback<Vendor[]>() {
-			public void onFailure(Throwable caught) {
-				// TODO: Do something with errors.
+		VendorSvc.getVendors(new AsyncCallback<Vendor[]>() {
+			public void onFailure (Throwable error) { 
+				handleError(error);
 			}
-
 			@Override
 			public void onSuccess(Vendor[] result) {
 				displayVendors(result);
 				addDropDownMenu(result);
 				addTimeStamp();
 			}
-		};
-		// Make the call to the vendor service.
-		VendorSvc.getVendors(callback);
-	}
-
-	private void loadFavouritesList() {
-		favouriteService.getFavourite(new AsyncCallback<Vendor[]>() {
-			public void onFailure (Throwable error) { }
-			@Override
-			public void onSuccess(Vendor[] result) {
-				displayFavourites(result);
-			}
-
 		});
 	}
 
 	//remove all data and display vendor table with new data
 	private void displayVendors(Vendor[] result) {
-		for (int i=1; vendorsFlexTable.getRowCount() < i; i++ ) {
-			vendorsFlexTable.removeRow(i);
-		}
-
-		vendors.clear();
+//			for (int i=vendorsFlexTable.getRowCount() - 1 ; i > 0; i-- ) {
+//				vendorsFlexTable.removeRow(i);
+//		}
+//		 		
+//		vendors.clear();
 
 		for (Vendor v : result) {
-			//add vendor to array list of vendors
-			vendors.add(v);
 			//display vendor in table
-			addVendor(v);
+			displayVendors(v);
 		}
 	}
 
-	//display favourites table
-	private void displayFavourites(Vendor[] result) {
-		for (Vendor vendor: result) {
-			displayFavourites(vendor);
+	// helper function for displayVendors(Vendor[] result) 
+	private void displayVendors(final Vendor vendor) {
+	// don't add vendor if it already exists 
+		if (vendors.contains(vendor)){
+			return;
 		}
-	}
-
-	// helper function for displayVendors
-	private void addVendor(final Vendor vendor) {
+		
 		int row = vendorsFlexTable.getRowCount();
+		vendors.add(vendor);
 
 		vendorsFlexTable.getRowFormatter().addStyleName(row, "FlexTable-noHighlight");
 		vendorsFlexTable.setText(row, 0, vendor.getName());
@@ -467,22 +449,46 @@ public class VanFood implements EntryPoint {
 			}
 		});
 	}
+	//------------------------- Vendors Table Ends ---------------
 
-	private void addFavourites(Vendor vendor){
+	//------------------------- Favourites Table Starts ---------------
+	
+	//load user's favourites
+	private void loadFavouritesList() {
+		favouriteService.getFavourite(new AsyncCallback<Vendor[]>() {
+			public void onFailure (Throwable error) { 
+				handleError(error);
+			}
+			@Override
+			public void onSuccess(Vendor[] result) {
+				displayFavourites(result);
+			}
+
+		});
+	}
+
+	//display favourites table
+	private void displayFavourites(Vendor[] result) {
+		for (Vendor vendor: result) {
+			displayFavourites(vendor);
+		}
+	}
+
+	// adds vendor to favourites (from favourite click)
+	private void addFavourites(final Vendor vendor){
 		//don't add vendor if it's already in the list of favourites
 		if (favouriteVendors.contains(vendor))
 			return;
-		addFavourite(vendor);
-	}
 
-	private void addFavourite(final Vendor vendor){
-//		favouriteService.addFavourite(vendor, new AsyncCallback<Void>(){
-//			public void onFailure(Throwable error) {
-//			}
-//			public void onSuccess(Void ignore) {
+		favouriteService.addFavourite(vendor, new AsyncCallback<Void>(){
+			public void onFailure(Throwable error) {
+				handleError(error);	
+			}
+			public void onSuccess(Void ignore) {
+			
 				displayFavourites(vendor);
-//			}
-//		});
+			}
+		});
 	}
 
 	private void displayFavourites (final Vendor vendor) {
@@ -507,13 +513,14 @@ public class VanFood implements EntryPoint {
 	}
 
 	private void removeFavourite(final Vendor vendor) {
-//		favouriteService.removeFavourite(vendor, new AsyncCallback<Void>(){
-//			public void onFailure(Throwable error) {
-//			}
-//			public void onSuccess(Void ignore) {
-				undisplayFavourite(vendor);
-//			}
-//		});
+		//		favouriteService.removeFavourite(vendor, new AsyncCallback<Void>(){
+		//			public void onFailure(Throwable error) {
+		//  		 handleError(error);
+		//			}
+		//			public void onSuccess(Void ignore) {
+		undisplayFavourite(vendor);
+		//			}
+		//		});
 	}
 
 	private void undisplayFavourite(Vendor vendor) {
@@ -521,6 +528,11 @@ public class VanFood implements EntryPoint {
 		favouriteVendors.remove(removedIndex);
 		favouritesTable.removeRow(removedIndex +1);
 	}
+
+
+	//------------------------- Favourites Table Ends ---------------
+
+
 }
 
 
