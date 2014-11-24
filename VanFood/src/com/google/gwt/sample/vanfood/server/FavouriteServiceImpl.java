@@ -33,7 +33,7 @@ implements FavouriteService{
 	 */
 	private static final long serialVersionUID = -6909150698955113860L;
 	private static final Logger LOG = Logger.getLogger(FavouriteServiceImpl.class.getName());
-	
+
 	private static final PersistenceManagerFactory PMF =
 			JDOHelper.getPersistenceManagerFactory("transactions-optional");
 
@@ -41,10 +41,16 @@ implements FavouriteService{
 	public void addFavourite(Vendor vendor) throws NotLoggedInException {
 		checkLoggedIn();
 		PersistenceManager pm = getPersistenceManager();
-
 		try {
+			Query q = pm.newQuery(Favourite.class, "user == u");
+			q.declareParameters("com.google.appengine.api.users.User u");
+			List<Favourite> favourites = (List<Favourite>) q.execute(getUser());
 			Long vendorID = vendor.getVendorID();
-			
+			for (Favourite favourite : favourites) {
+				if (vendorID.equals(favourite.getVendorID())) {
+					return;
+				}
+			}
 			pm.makePersistent(new Favourite(getUser(), vendorID));
 		} finally {
 			pm.close();
@@ -60,7 +66,7 @@ implements FavouriteService{
 			q.declareParameters("com.google.appengine.api.users.User u");
 			List<Favourite> favourites = (List<Favourite>) q.execute(getUser());
 			Long vendorID = vendor.getVendorID();
-			
+
 			for (Favourite favourite : favourites) {
 				if (vendorID.equals(favourite.getVendorID())) {
 					deleteCount++;
@@ -85,7 +91,7 @@ implements FavouriteService{
 			q.declareParameters("com.google.appengine.api.users.User u");
 			q.setOrdering("createDate");
 			List<Favourite> favourites = (List<Favourite>) q.execute(getUser());
-			
+
 			for (Favourite favourite : favourites) {
 				Long vendorID = favourite.getVendorID();	
 				if (!vendorID.equals(null)){

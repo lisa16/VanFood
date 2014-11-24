@@ -431,12 +431,6 @@ public class VanFood implements EntryPoint {
 
 	//remove all data and display vendor table with new data
 	private void displayVendors(Vendor[] result) {
-		//			for (int i=vendorsFlexTable.getRowCount() - 1 ; i > 0; i-- ) {
-		//				vendorsFlexTable.removeRow(i);
-		//		}
-		//		 		
-		//		vendors.clear();
-
 		for (Vendor v : result) {
 			//display vendor in table
 			displayVendors(v);
