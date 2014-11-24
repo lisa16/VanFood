@@ -33,6 +33,14 @@ import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.maps.client.InfoWindow;
+import com.google.gwt.maps.client.InfoWindowContent;
+import com.google.gwt.maps.client.MapWidget;
+import com.google.gwt.maps.client.Maps;
+import com.google.gwt.maps.client.event.MarkerClickHandler;
+import com.google.gwt.maps.client.event.MarkerClickHandler.MarkerClickEvent;
+import com.google.gwt.maps.client.geom.LatLng;
+import com.google.gwt.maps.client.overlay.Marker;
 
 import java.util.Date;  
 /**
@@ -48,6 +56,7 @@ public class VanFood implements EntryPoint {
 	private ScrollPanel favouritesScrollPanel = new ScrollPanel();
 	private TabPanel vendorsTabPanel = new TabPanel();
 	private VerticalPanel mapPanel = new VerticalPanel();
+	private MapWidget map;
 	private FlowPanel buttonsPanel = new FlowPanel();
 	private ArrayList<Vendor> vendors = new ArrayList<Vendor>();
 	private LoginInfo loginInfo = null;
@@ -64,7 +73,8 @@ public class VanFood implements EntryPoint {
 	private MailServiceAsync mailSvc = GWT.create(MailService.class);
 	private ArrayList<Vendor> favouriteVendors = new ArrayList<Vendor>();
 	private final FavouriteServiceAsync favouriteService = GWT.create(FavouriteService.class);
-
+	private String apiKey = "AIzaSyC9HJfCdipVC6W6qo8ewsZkJz0mCpmviHQ";
+	
 	/**
 	 * The message displayed to the user when the server cannot be reached or
 	 * returns an error.
@@ -90,8 +100,12 @@ public class VanFood implements EntryPoint {
 			public void onSuccess(LoginInfo result) {
 				loginInfo = result;
 				if(loginInfo.isLoggedIn()) {
-					loadVanFood();
-				} else {
+					  Maps.loadMapsApi(apiKey, "2", false, new Runnable() {
+					      public void run() {
+					        loadVanFood();
+					      }
+					    });				
+					  } else {
 					loadLogin();
 				}
 			}
@@ -120,9 +134,6 @@ public class VanFood implements EntryPoint {
 	private void loadContactPage(){
 		DOM.getElementById("vendorList").getStyle().setDisplay(Display.NONE);
 		DOM.getElementById("adminPage").getStyle().setDisplay(Display.NONE);
-		Label emailLabel = new Label("Your e-mail address: ");
-		final TextBox from = new TextBox();
-		from.setText(loginInfo.getEmailAddress());
 		Label subjectLabel = new Label("Subject: ");
 		final TextBox subject= new TextBox();
 		Label msgLabel = new Label("Enter your feedback: ");
@@ -134,31 +145,31 @@ public class VanFood implements EntryPoint {
 
 			@Override
 			public void onClick(ClickEvent event) {
-				final String msgFrom = from.getText();
+				final String msgFrom = loginInfo.getEmailAddress();
 				final String message = msg.getText();
 				final String msgSubject = subject.getText();
-				System.out.println("Submit button clicked");
+				if(msgSubject == ""){
+					Window.alert("There's no subject, please fill it out and press the submit button again!");
+					return;
+				}
+				if(message == ""){
+					Window.alert("There's no message to send, please fill it out and press the submit button again!");
+					return;
+				}
 				mailSvc.sendMail(msgFrom, msgSubject,"miss.lisa7102@gmail.com", message, new AsyncCallback<String>()
 						{
 					public void onFailure(Throwable caught) {
-						System.out.println("Didn't work");
-						Window.alert("Didn't work");
+						Window.alert("The message was not sent:( Try again!");
 					}
 
 					@Override
 					public void onSuccess(String result) {
-						System.out.println("Message sent");
-						Window.alert("Message sent");
+						Window.alert("Thank you for the feedback, we will get back to you soon!");
 					}
 
 						});
 			}});
 
-
-
-
-		contactPanel.add(emailLabel);
-		contactPanel.add(from);
 		contactPanel.add(subjectLabel);
 		contactPanel.add(subject);
 		contactPanel.add(msgLabel);
@@ -231,9 +242,11 @@ public class VanFood implements EntryPoint {
 		loadVendorList();
 		loadFavouritesList();
 
-		// hard-code a random map for now
-		Image map = new Image();
-		map.setUrl("http://maps.googleapis.com/maps/api/staticmap?center=Vancouver,+BC&zoom=12&size=900x500&maptype=roadmap");
+		// Open a map centered on, Vancouver BC
+	    LatLng van = LatLng.newInstance(49.2500, -123.1000);
+
+	    map = new MapWidget(van, 12);
+	    map.setSize("35em", "35em");
 		mapPanel.add(map);
 
 		//create scroll for vendors 
@@ -308,6 +321,7 @@ public class VanFood implements EntryPoint {
 	ClickHandler userRowCheck = new ClickHandler() {
 		@Override
 		public void onClick(ClickEvent event) {
+			map.clearOverlays();
 			Cell src = null;
 			try {
 				src = vendorsFlexTable.getCellForEvent(event);
@@ -329,6 +343,8 @@ public class VanFood implements EntryPoint {
 							vendorsFlexTable.getText(rowIndex, 1).equalsIgnoreCase(v.getAddress())) 
 						v.setHighlighted(true);
 				}
+				
+				
 			} else {
 				vendorsFlexTable.getRowFormatter().addStyleName(rowIndex, "FlexTable-noHighlight");
 				vendorsFlexTable.getRowFormatter().removeStyleName(rowIndex, "FlexTable-Highlight");
@@ -336,6 +352,11 @@ public class VanFood implements EntryPoint {
 					if (vendorsFlexTable.getText(rowIndex, 0).equalsIgnoreCase(v.getName()) &&
 							vendorsFlexTable.getText(rowIndex, 1).equalsIgnoreCase(v.getAddress()))
 						v.setHighlighted(false);
+				}
+			}
+			for(Vendor v : vendors){
+				if(v.isHighlighted()){
+					map.addOverlay(createMarker(v));
 				}
 			}
 		}	
@@ -346,6 +367,7 @@ public class VanFood implements EntryPoint {
 
 		@Override
 		public void onChange(ChangeEvent event) {
+			map.clearOverlays();
 			HTMLTable.RowFormatter rf = vendorsFlexTable.getRowFormatter();
 			HTMLTable.RowFormatter rfFav = favouritesTable.getRowFormatter();
 			for(int r=1; r<vendorsFlexTable.getRowCount();r++){
@@ -362,10 +384,13 @@ public class VanFood implements EntryPoint {
 					rf.setStyleName(i, "FlexTable-Highlight");
 					rfFav.setStyleName(i, "FlexTable-Highlight");
 					vendors.get(r).setHighlighted(true);
-				}				
-			}			
-		}		
-	}
+					map.addOverlay(createMarker(vendors.get(r)));
+					}				
+			}	for(Vendor v : vendors){
+				if(v.isHighlighted()){
+					map.addOverlay(createMarker(v));
+				}}	
+	}}
 
 	class AdminButtonHandler implements ClickHandler{
 
@@ -380,7 +405,7 @@ public class VanFood implements EntryPoint {
 	// last updated time stamp
 	private void addTimeStamp(){
 		lastUpdatedLabel.setText("Last update : "  
-				+ DateTimeFormat.getMediumDateTimeFormat().format(new Date()));
+				+ DateTimeFormat.getFormat(DateTimeFormat.PredefinedFormat.DATE_TIME_MEDIUM).format(new Date()));
 
 		mainPanel.add(lastUpdatedLabel);
 	}
@@ -511,6 +536,7 @@ public class VanFood implements EntryPoint {
 		});
 	}
 
+
 	private void removeFavourite(final Vendor vendor) {
 		//		favouriteService.removeFavourite(vendor, new AsyncCallback<Void>(){
 		//			public void onFailure(Throwable error) {
@@ -531,6 +557,44 @@ public class VanFood implements EntryPoint {
 
 	//------------------------- Favourites Table Ends ---------------
 
+
+	// handle removing favourites
+	ClickHandler RemoveHandler = new ClickHandler() {
+		@Override
+		public void onClick(ClickEvent event) {
+			Cell src = null;
+			try {
+				src = favouritesTable.getCellForEvent(event);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			int rowIndex=0;
+			if (src!=null)
+				rowIndex = src.getRowIndex();
+			if (rowIndex==0)
+				return;
+		}
+
+	};
+	
+	private Marker createMarker(Vendor v) {
+		double lat =v.getLat();
+		double lon = v.getLon();
+		final String name = v.getName();
+		LatLng point = LatLng.newInstance(lat, lon);
+	    final Marker marker = new Marker(point);
+	    
+	    marker.addMarkerClickHandler(new MarkerClickHandler() {
+	      public void onClick(MarkerClickEvent event) {
+	        InfoWindow info = map.getInfoWindow();
+	        info.open(marker,
+	            new InfoWindowContent("Marker #<b>" + name + "</b>"));
+	      }
+	    });
+	    System.out.println(v.toString());
+	    return marker;
+	  }
 
 }
 

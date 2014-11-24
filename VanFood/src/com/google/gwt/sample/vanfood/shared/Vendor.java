@@ -15,7 +15,7 @@ public class Vendor implements Serializable{
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 7851654394103627831L;
+	
 	@PrimaryKey
 	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
 	private Long id;
@@ -25,6 +25,10 @@ public class Vendor implements Serializable{
 	private String address;
 	@Persistent
 	private String foodtype;
+	@Persistent
+	private double lat;
+	@Persistent
+	private double lon;
 	@NotPersistent 
 	private boolean highlighted;
 	
@@ -34,11 +38,34 @@ public class Vendor implements Serializable{
 		
 	}
 
-	public Vendor(String name, String address, String foodtype) {
-		this.setName(name);
-		this.setAddress(address);
-		this.setFoodtype(foodtype);
-		this.highlighted = false;
+	public Vendor(String name, String address, String foodtype, double lat, double lon) {
+		setName(name);
+		setAddress(address);
+		setFoodtype(foodtype);
+		highlighted = false;
+		setLat(lat);
+		setLon(lon);
+		
+		
+	}
+	
+	
+	public double getLon(){
+		return lon;
+	}
+	
+	public double getLat(){
+		return lat;
+	}
+	
+	
+	private void setLon(double lon) {
+		this.lon = lon;
+		
+	}
+
+	private void setLat(double lat) {
+		this.lat = lat;		
 	}
 
 	public String getName() {
@@ -74,7 +101,7 @@ public class Vendor implements Serializable{
 	}
 	
 	public String toString(){
-		return this.name + ", " + this.address + ",  " + this.foodtype;
+		return this.name + ", " + this.address + ",  " + this.foodtype + " " + this.getLat() + " " + this.getLon();
 	}
 
 	public Vendor getVendor() {
