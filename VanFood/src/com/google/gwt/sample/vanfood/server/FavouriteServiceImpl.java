@@ -43,14 +43,7 @@ implements FavouriteService{
 		PersistenceManager pm = getPersistenceManager();
 
 		try {
-//			Set<Long> favList = pm.getManagedObjects();
 			Long vendorID = vendor.getVendorID();
-//					
-//			if(vendorID!= 0) {
-//				if (favList.contains(vendorID)) {
-//					throw new EntityExistsException("Object already exists");
-//				}
-//			}
 			
 			pm.makePersistent(new Favourite(getUser(), vendorID));
 		} finally {
@@ -66,8 +59,10 @@ implements FavouriteService{
 			Query q = pm.newQuery(Favourite.class, "user == u");
 			q.declareParameters("com.google.appengine.api.users.User u");
 			List<Favourite> favourites = (List<Favourite>) q.execute(getUser());
+			Long vendorID = vendor.getVendorID();
+			
 			for (Favourite favourite : favourites) {
-				if (vendor.equals(favourite.getVendorID())) {
+				if (vendorID.equals(favourite.getVendorID())) {
 					deleteCount++;
 					pm.deletePersistent(favourite);
 				}
@@ -92,9 +87,8 @@ implements FavouriteService{
 			List<Favourite> favourites = (List<Favourite>) q.execute(getUser());
 			
 			for (Favourite favourite : favourites) {
-				Long vendorID = favourite.getVendorID();				
-				//line 97 causes null pointer exception thrown. 
-				if (vendorID > 0 && !vendorID.equals(null)){
+				Long vendorID = favourite.getVendorID();	
+				if (!vendorID.equals(null)){
 					Vendor vendor = pm.getObjectById(Vendor.class, vendorID);
 					favouriteVendors.add(vendor);
 				}

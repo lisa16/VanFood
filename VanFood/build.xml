@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<project name="StockWatcher" default="build" basedir=".">
+<project name="VanFood" default="build" basedir=".">
   <!-- Configure path to GWT SDK -->
   <property name="gwt.sdk" location="Path to GWT" />
   <!-- Configure path to App Engine SDK -->
@@ -62,7 +62,7 @@
       <!-- add jvmarg -Xss16M or similar if you see a StackOverflowError -->
       <jvmarg value="-Xmx256M"/>
       <!-- Additional arguments like -style PRETTY or -logLevel DEBUG -->
-      <arg value="com.google.gwt.sample.stockwatcher.StockWatcher"/>
+      <arg value="com.google.gwt.sample.VanFood.VanFood"/>
     </java>
   </target>
 
@@ -75,11 +75,11 @@
       </classpath>
       <jvmarg value="-Xmx256M"/>
       <arg value="-startupUrl"/>
-      <arg value="StockWatcher.html"/>
+      <arg value="VanFood.html"/>
       <!-- Additional arguments like -style PRETTY or -logLevel DEBUG -->
       <arg value="-server"/>
       <arg value="com.google.appengine.tools.development.gwt.AppEngineLauncher"/>
-      <arg value="com.google.gwt.sample.stockwatcher.StockWatcher"/>
+      <arg value="com.google.gwt.sample.VanFood.VanFood"/>
     </java>
   </target>
 
@@ -146,12 +146,12 @@
   <target name="build" depends="gwtc" description="Build this project" />
 
   <target name="war" depends="build" description="Create a war file">
-    <zip destfile="StockWatcher.war" basedir="war"/>
+    <zip destfile="VanFood.war" basedir="war"/>
   </target>
 
   <target name="clean" description="Cleans this project">
     <delete dir="war/WEB-INF/classes" failonerror="false" />
-    <delete dir="war/stockwatcher" failonerror="false" />
+    <delete dir="war/VanFood" failonerror="false" />
   </target>
 
 </project>

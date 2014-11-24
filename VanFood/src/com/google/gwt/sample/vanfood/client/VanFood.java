@@ -74,7 +74,7 @@ public class VanFood implements EntryPoint {
 	private ArrayList<Vendor> favouriteVendors = new ArrayList<Vendor>();
 	private final FavouriteServiceAsync favouriteService = GWT.create(FavouriteService.class);
 	private String apiKey = "AIzaSyC9HJfCdipVC6W6qo8ewsZkJz0mCpmviHQ";
-	
+
 	/**
 	 * The message displayed to the user when the server cannot be reached or
 	 * returns an error.
@@ -100,12 +100,12 @@ public class VanFood implements EntryPoint {
 			public void onSuccess(LoginInfo result) {
 				loginInfo = result;
 				if(loginInfo.isLoggedIn()) {
-					  Maps.loadMapsApi(apiKey, "2", false, new Runnable() {
-					      public void run() {
-					        loadVanFood();
-					      }
-					    });				
-					  } else {
+					Maps.loadMapsApi(apiKey, "2", false, new Runnable() {
+						public void run() {
+							loadVanFood();
+						}
+					});				
+				} else {
 					loadLogin();
 				}
 			}
@@ -243,10 +243,10 @@ public class VanFood implements EntryPoint {
 		loadFavouritesList();
 
 		// Open a map centered on, Vancouver BC
-	    LatLng van = LatLng.newInstance(49.2500, -123.1000);
+		LatLng van = LatLng.newInstance(49.2500, -123.1000);
 
-	    map = new MapWidget(van, 12);
-	    map.setSize("35em", "35em");
+		map = new MapWidget(van, 12);
+		map.setSize("35em", "35em");
 		mapPanel.add(map);
 
 		//create scroll for vendors 
@@ -343,8 +343,8 @@ public class VanFood implements EntryPoint {
 							vendorsFlexTable.getText(rowIndex, 1).equalsIgnoreCase(v.getAddress())) 
 						v.setHighlighted(true);
 				}
-				
-				
+
+
 			} else {
 				vendorsFlexTable.getRowFormatter().addStyleName(rowIndex, "FlexTable-noHighlight");
 				vendorsFlexTable.getRowFormatter().removeStyleName(rowIndex, "FlexTable-Highlight");
@@ -369,10 +369,8 @@ public class VanFood implements EntryPoint {
 		public void onChange(ChangeEvent event) {
 			map.clearOverlays();
 			HTMLTable.RowFormatter rf = vendorsFlexTable.getRowFormatter();
-			HTMLTable.RowFormatter rfFav = favouritesTable.getRowFormatter();
 			for(int r=1; r<vendorsFlexTable.getRowCount();r++){
 				rf.setStyleName(r, "FlexTable-noHighlight");
-				rfFav.setStyleName(r, "FlexTable-noHighlight");
 			}
 			for (Vendor v : vendors)
 				v.setHighlighted(false);
@@ -382,15 +380,14 @@ public class VanFood implements EntryPoint {
 				if(vendors.get(r).getFoodtype().equals(foodType)){
 					int i = (r+1);
 					rf.setStyleName(i, "FlexTable-Highlight");
-					rfFav.setStyleName(i, "FlexTable-Highlight");
 					vendors.get(r).setHighlighted(true);
 					map.addOverlay(createMarker(vendors.get(r)));
-					}				
+				}				
 			}	for(Vendor v : vendors){
 				if(v.isHighlighted()){
 					map.addOverlay(createMarker(v));
 				}}	
-	}}
+		}}
 
 	class AdminButtonHandler implements ClickHandler{
 
@@ -434,11 +431,11 @@ public class VanFood implements EntryPoint {
 
 	//remove all data and display vendor table with new data
 	private void displayVendors(Vendor[] result) {
-//			for (int i=vendorsFlexTable.getRowCount() - 1 ; i > 0; i-- ) {
-//				vendorsFlexTable.removeRow(i);
-//		}
-//		 		
-//		vendors.clear();
+		//			for (int i=vendorsFlexTable.getRowCount() - 1 ; i > 0; i-- ) {
+		//				vendorsFlexTable.removeRow(i);
+		//		}
+		//		 		
+		//		vendors.clear();
 
 		for (Vendor v : result) {
 			//display vendor in table
@@ -448,11 +445,11 @@ public class VanFood implements EntryPoint {
 
 	// helper function for displayVendors(Vendor[] result) 
 	private void displayVendors(final Vendor vendor) {
-	// don't add vendor if it already exists 
+		// don't add vendor if it already exists 
 		if (vendors.contains(vendor)){
 			return;
 		}
-		
+
 		int row = vendorsFlexTable.getRowCount();
 		vendors.add(vendor);
 
@@ -477,7 +474,7 @@ public class VanFood implements EntryPoint {
 	//------------------------- Vendors Table Ends ---------------
 
 	//------------------------- Favourites Table Starts ---------------
-	
+
 	//load user's favourites
 	private void loadFavouritesList() {
 		favouriteService.getFavourite(new AsyncCallback<Vendor[]>() {
@@ -538,14 +535,14 @@ public class VanFood implements EntryPoint {
 
 
 	private void removeFavourite(final Vendor vendor) {
-		//		favouriteService.removeFavourite(vendor, new AsyncCallback<Void>(){
-		//			public void onFailure(Throwable error) {
-		//  		 handleError(error);
-		//			}
-		//			public void onSuccess(Void ignore) {
-		undisplayFavourite(vendor);
-		//			}
-		//		});
+		favouriteService.removeFavourite(vendor, new AsyncCallback<Void>(){
+			public void onFailure(Throwable error) {
+				handleError(error);
+			}
+			public void onSuccess(Void ignore) {
+				undisplayFavourite(vendor);
+			}
+		});
 	}
 
 	private void undisplayFavourite(Vendor vendor) {
@@ -577,24 +574,24 @@ public class VanFood implements EntryPoint {
 		}
 
 	};
-	
+
 	private Marker createMarker(Vendor v) {
 		double lat =v.getLat();
 		double lon = v.getLon();
 		final String name = v.getName();
 		LatLng point = LatLng.newInstance(lat, lon);
-	    final Marker marker = new Marker(point);
-	    
-	    marker.addMarkerClickHandler(new MarkerClickHandler() {
-	      public void onClick(MarkerClickEvent event) {
-	        InfoWindow info = map.getInfoWindow();
-	        info.open(marker,
-	            new InfoWindowContent("Marker #<b>" + name + "</b>"));
-	      }
-	    });
-	    System.out.println(v.toString());
-	    return marker;
-	  }
+		final Marker marker = new Marker(point);
+
+		marker.addMarkerClickHandler(new MarkerClickHandler() {
+			public void onClick(MarkerClickEvent event) {
+				InfoWindow info = map.getInfoWindow();
+				info.open(marker,
+						new InfoWindowContent("Marker #<b>" + name + "</b>"));
+			}
+		});
+		System.out.println(v.toString());
+		return marker;
+	}
 
 }
 
