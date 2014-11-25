@@ -29,7 +29,7 @@ public class TwitterPopup extends PopupPanel {
 		} catch (Exception e) {
 
 		}
-		if (vendorName==null)
+		if ((vendorName==null)||(vendorName.equalsIgnoreCase("Name not available")))
 			vendorName = "a street vendor";
 		Label desc = new Label("You've added " + vendorName + " to your favourites list." +"\n"
 				+ "(Click outside the box to close)");

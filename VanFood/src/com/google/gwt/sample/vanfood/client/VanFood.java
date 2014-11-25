@@ -470,7 +470,7 @@ private void displayVendors(final Vendor vendor) {
 	vendorsFlexTable.setWidget(row, 3, favouriteButton);
 	favouriteButton.addClickHandler(new ClickHandler() {
 		public void onClick(ClickEvent event) {
-			new TwitterPopup(null).show();
+			new TwitterPopup(vendor).show();
 			addFavourites(vendor);
 		}
 	});
