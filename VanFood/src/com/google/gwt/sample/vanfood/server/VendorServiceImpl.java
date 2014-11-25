@@ -38,11 +38,13 @@ public class VendorServiceImpl extends RemoteServiceServlet implements VendorSer
 		PersistenceManager pm = getPersistenceManager();
 		Query q = pm.newQuery(Vendor.class);
 		List<Vendor> vendorsList = (List<Vendor>) q.execute(getVendors());
-	//	q.deletePersistentAll();
-
+		
+		int numVendorsAdded = 0;
+		String outputMsg = "";
+		int numOfVendorsInFile = 0;
+		List<Vendor> listOfVendorsToAdd = new ArrayList<Vendor>();
 		try
 		{
-
 			// Location of the vendor xls sheet that needs to be parsed
 			FileInputStream file = new FileInputStream(new File("new_food_vendor_locations.xls"));
 
@@ -66,7 +68,7 @@ public class VendorServiceImpl extends RemoteServiceServlet implements VendorSer
 				if (status.trim().equals("pending")) {
 					continue;
 				}
-				
+				numOfVendorsInFile++;
 				//For each row, get the string values of Columns 3, 4, and 5 - corresponding to cells D, E, and F 
 				try{
 					name = row.getCell(3).getStringCellValue();
@@ -114,28 +116,46 @@ public class VendorServiceImpl extends RemoteServiceServlet implements VendorSer
 					lon = 90;
 				}
 
-
 				// Create Vendor object from information in the row
 
 				Vendor vendor = new Vendor(name, address, foodtype, lat, lon);
 	    		//add vendor if it's not already in the list
-				
-				if (!vendorsList.contains(vendor)) {
-	    			pm.makePersistent(vendor);
-				}		
+				boolean isFound = false;
+				for(Vendor v : vendorsList)
+				{
+					if(v.getName().equals(vendor.getName()) 
+							&& v.getAddress().equals(vendor.getAddress())
+							&& v.getFoodtype().equals(vendor.getFoodtype())
+							&& v.getLat() == vendor.getLat()
+							&& v.getLon() == vendor.getLon())
+					{
+					//Don't add since we already have
+						isFound = true;
+					}
+				}
+				if(!isFound)
+				{
+					listOfVendorsToAdd.add(vendor);
+					numVendorsAdded ++;
+				}
 			}
+			pm.makePersistentAll(listOfVendorsToAdd);
+		
 
 			file.close();
+			outputMsg = "Data parsed & stored this number of vendors: " + numVendorsAdded
+					+"NumOfVendorsInFile: " + numOfVendorsInFile;
 		} 
 		catch (Exception e) 
 		{
 			e.printStackTrace();
+			outputMsg = "Data parse Error: " + e.getMessage(); 
 		}
 
 		finally{
 			pm.close();
 		}
-		return ("Data parsed & stored!");
+		return outputMsg;
 
 	}
 

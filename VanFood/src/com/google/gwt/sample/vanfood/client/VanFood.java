@@ -200,8 +200,8 @@ public class VanFood implements EntryPoint {
 
 					@Override
 					public void onSuccess(String result) {
-						System.out.println("Data parsed & Stored!");
-						Window.alert("Data parsed & Stored!");
+						System.out.println(result);
+						Window.alert(result);
 					}
 
 						});
