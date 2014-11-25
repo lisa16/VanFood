@@ -37,10 +37,12 @@ public class VendorServiceImpl extends RemoteServiceServlet implements VendorSer
 
 		PersistenceManager pm = getPersistenceManager();
 		Query q = pm.newQuery(Vendor.class);
+		List<Vendor> vendorsList = (List<Vendor>) q.execute(getVendors());
 	//	q.deletePersistentAll();
+
 		try
 		{
-			
+
 			// Location of the vendor xls sheet that needs to be parsed
 			FileInputStream file = new FileInputStream(new File("new_food_vendor_locations.xls"));
 
@@ -59,13 +61,6 @@ public class VendorServiceImpl extends RemoteServiceServlet implements VendorSer
 				String foodtype;
 				double lat;
 				double lon;
-				
-				String status = row.getCell(2).getStringCellValue();
-				if (status.trim().equals("pending")) {
-					continue;
-				}
-					
-				
 				//For each row, get the string values of Columns 3, 4, and 5 - corresponding to cells D, E, and F 
 				try{
 					name = row.getCell(3).getStringCellValue();
@@ -117,8 +112,11 @@ public class VendorServiceImpl extends RemoteServiceServlet implements VendorSer
 				// Create Vendor object from information in the row
 
 				Vendor vendor = new Vendor(name, address, foodtype, lat, lon);
-				pm.makePersistent(vendor);
-
+	    		//add vendor if it's not already in the list
+				
+				if (!vendorsList.contains(vendor)) {
+	    			pm.makePersistent(vendor);
+				}		
 			}
 
 			file.close();
@@ -144,10 +142,7 @@ public class VendorServiceImpl extends RemoteServiceServlet implements VendorSer
 	    	Query q = pm.newQuery(Vendor.class);
 	    	List<Vendor> results = (List<Vendor>) q.execute();
 	    	for(Vendor v: results){
-	    		//add vendor if it's not already in the list
-	    		if (!vendors.contains(v)) {
-	    			vendors.add(v);
-				}
+	    		vendors.add(v);
 	    	}
 	    }
 	    finally{
