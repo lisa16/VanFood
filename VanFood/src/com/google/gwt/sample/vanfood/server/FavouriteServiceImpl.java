@@ -45,12 +45,14 @@ implements FavouriteService{
 			Query q = pm.newQuery(Favourite.class, "user == u");
 			q.declareParameters("com.google.appengine.api.users.User u");
 			List<Favourite> favourites = (List<Favourite>) q.execute(getUser());
+			
 			Long vendorID = vendor.getVendorID();
+		
 			for (Favourite favourite : favourites) {
 				if (vendorID.equals(favourite.getVendorID())) {
 					return;
 				}
-			}
+			} 
 			pm.makePersistent(new Favourite(getUser(), vendorID));
 		} finally {
 			pm.close();
