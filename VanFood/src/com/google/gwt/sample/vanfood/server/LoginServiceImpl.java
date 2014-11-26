@@ -25,9 +25,11 @@ LoginService {
 			loginInfo.setEmailAddress(user.getEmail());
 			loginInfo.setNickname(user.getNickname());
 			loginInfo.setLogoutUrl(userService.createLogoutURL(requestUri));
+			loginInfo.setAdmin(userService.isUserAdmin());
 		} else {
 			loginInfo.setLoggedIn(false);
 			loginInfo.setLoginUrl(userService.createLoginURL(requestUri));
+			loginInfo.setAdmin(false);
 		}
 		return loginInfo;
 	}}

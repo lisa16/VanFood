@@ -1,10 +1,8 @@
 package com.google.gwt.sample.vanfood.client;
 
 import java.util.ArrayList;
+import java.util.Date;
 
-import com.google.gwt.sample.vanfood.server.Favourite;
-import com.google.gwt.sample.vanfood.shared.Vendor;
-import com.google.gwt.user.client.ui.HTMLTable.Cell;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.Display;
@@ -12,6 +10,15 @@ import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.maps.client.InfoWindow;
+import com.google.gwt.maps.client.InfoWindowContent;
+import com.google.gwt.maps.client.MapWidget;
+import com.google.gwt.maps.client.Maps;
+import com.google.gwt.maps.client.event.MarkerClickHandler;
+import com.google.gwt.maps.client.geom.LatLng;
+import com.google.gwt.maps.client.overlay.Marker;
+import com.google.gwt.sample.vanfood.shared.Vendor;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -19,30 +26,17 @@ import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.FormPanel;
-import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
 import com.google.gwt.user.client.ui.HTMLTable;
+import com.google.gwt.user.client.ui.HTMLTable.Cell;
 import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.ScrollPanel;
-import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TabPanel;
+import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.i18n.client.DateTimeFormat;
-import com.google.gwt.maps.client.InfoWindow;
-import com.google.gwt.maps.client.InfoWindowContent;
-import com.google.gwt.maps.client.MapWidget;
-import com.google.gwt.maps.client.Maps;
-import com.google.gwt.maps.client.event.MarkerClickHandler;
-import com.google.gwt.maps.client.event.MarkerClickHandler.MarkerClickEvent;
-import com.google.gwt.maps.client.geom.LatLng;
-import com.google.gwt.maps.client.overlay.Marker;
-
-import java.util.Date;  
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
  */
@@ -99,12 +93,22 @@ public class VanFood implements EntryPoint {
 			}
 			public void onSuccess(LoginInfo result) {
 				loginInfo = result;
-				if(loginInfo.isLoggedIn()) {
+				if(loginInfo.isLoggedIn() && loginInfo.isAdmin()) {
+					Maps.loadMapsApi(apiKey, "2", false, new Runnable() {
+						public void run() {
+							loadVanFood();
+							loadAdminPage();
+						}
+					});	
+				}
+				else if(loginInfo.isLoggedIn()) {
 					Maps.loadMapsApi(apiKey, "2", false, new Runnable() {
 						public void run() {
 							loadVanFood();
 						}
-					});				
+					});
+
+
 				} else {
 					loadLogin();
 				}
@@ -180,7 +184,7 @@ public class VanFood implements EntryPoint {
 	}
 
 	private void loadAdminPage(){
-		DOM.getElementById("vendorList").getStyle().setDisplay(Display.NONE);
+//		DOM.getElementById("vendorList").getStyle().setDisplay(Display.NONE);
 		Button updateButton = new Button("Parse Updated Data");
 		updateButton.getElement().setClassName("btn btn-default btn-primary");
 
@@ -372,230 +376,230 @@ public class VanFood implements EntryPoint {
 	}	
 
 
-// handles drop down menu 
-class MenuHandler implements ChangeHandler{
+	// handles drop down menu 
+	class MenuHandler implements ChangeHandler{
 
-	@Override
-	public void onChange(ChangeEvent event) {
-		map.clearOverlays();
-		HTMLTable.RowFormatter rf = vendorsFlexTable.getRowFormatter();
-		for(int r=1; r<vendorsFlexTable.getRowCount();r++){
-			rf.setStyleName(r, "FlexTable-noHighlight");
-		}
-		for (Vendor v : vendors)
-			v.setHighlighted(false);
-		int index = lb.getSelectedIndex();
-		String foodType = lb.getItemText(index);
-		for(int r=0; r<vendors.size(); r++){
-			if(vendors.get(r).getFoodtype().equals(foodType)){
-				int i = (r+1);
-				rf.setStyleName(i, "FlexTable-Highlight");
-				vendors.get(r).setHighlighted(true);
-				map.addOverlay(createMarker(vendors.get(r)));
-			}				
-		}	for(Vendor v : vendors){
-			if(v.isHighlighted()){
-				map.addOverlay(createMarker(v));
-			}}	
-	}}
-
-class AdminButtonHandler implements ClickHandler{
-
-	@Override
-	public void onClick(ClickEvent event) {
-		loadAdminPage();
-
-	}
-
-}
-
-// last updated time stamp
-private void addTimeStamp(){
-	lastUpdatedLabel.setText("Last update : "  
-			+ DateTimeFormat.getFormat(DateTimeFormat.PredefinedFormat.DATE_TIME_MEDIUM).format(new Date()));
-
-	mainPanel.add(lastUpdatedLabel);
-}
-
-
-//------------------------- Vendors Table Starts ---------------
-//service proxy 
-private void loadVendorList() {
-	// Initialize the service proxy.
-	if (VendorSvc == null) {
-		VendorSvc = GWT.create(VendorService.class);
-	}
-
-	VendorSvc.getVendors(new AsyncCallback<Vendor[]>() {
-		public void onFailure (Throwable error) { 
-			handleError(error);
-		}
 		@Override
-		public void onSuccess(Vendor[] result) {
-			displayVendors(result);
-			addDropDownMenu(result);
-			addTimeStamp();
-		}
-	});
-}
+		public void onChange(ChangeEvent event) {
+			map.clearOverlays();
+			HTMLTable.RowFormatter rf = vendorsFlexTable.getRowFormatter();
+			for(int r=1; r<vendorsFlexTable.getRowCount();r++){
+				rf.setStyleName(r, "FlexTable-noHighlight");
+			}
+			for (Vendor v : vendors)
+				v.setHighlighted(false);
+			int index = lb.getSelectedIndex();
+			String foodType = lb.getItemText(index);
+			for(int r=0; r<vendors.size(); r++){
+				if(vendors.get(r).getFoodtype().equals(foodType)){
+					int i = (r+1);
+					rf.setStyleName(i, "FlexTable-Highlight");
+					vendors.get(r).setHighlighted(true);
+					map.addOverlay(createMarker(vendors.get(r)));
+				}				
+			}	for(Vendor v : vendors){
+				if(v.isHighlighted()){
+					map.addOverlay(createMarker(v));
+				}}	
+		}}
 
-//remove all data and display vendor table with new data
-private void displayVendors(Vendor[] result) {
-	for (Vendor v : result) {
-		//display vendor in table
-		displayVendors(v);
-	}
-}
+	class AdminButtonHandler implements ClickHandler{
 
-// helper function for displayVendors(Vendor[] result) 
-private void displayVendors(final Vendor vendor) {
-	// don't add vendor if it already exists 
-	if (vendors.contains(vendor)){
-		return;
-	}
-
-	int row = vendorsFlexTable.getRowCount();
-	vendors.add(vendor);
-
-	vendorsFlexTable.getRowFormatter().addStyleName(row, "FlexTable-noHighlight");
-	vendorsFlexTable.setText(row, 0, vendor.getName());
-	vendorsFlexTable.getColumnFormatter().addStyleName(0, "vendorColumn");
-	vendorsFlexTable.setText(row, 1, vendor.getAddress());
-	vendorsFlexTable.getColumnFormatter().addStyleName(1, "vendorColumn"); 
-	vendorsFlexTable.setText(row, 2, vendor.getFoodtype());
-	vendorsFlexTable.getColumnFormatter().addStyleName(2, "vendorColumn");
-
-	// Add a button to add this vendor to favourites
-	Button favouriteButton = new Button("Favourite");
-	vendorsFlexTable.setWidget(row, 3, favouriteButton);
-	favouriteButton.addClickHandler(new ClickHandler() {
+		@Override
 		public void onClick(ClickEvent event) {
-			new TwitterPopup(vendor).show();
-			addFavourites(vendor);
-		}
-	});
-}
-//------------------------- Vendors Table Ends ---------------
+			loadAdminPage();
 
-//------------------------- Favourites Table Starts ---------------
-
-//load user's favourites
-private void loadFavouritesList() {
-	favouriteService.getFavourite(new AsyncCallback<Vendor[]>() {
-		public void onFailure (Throwable error) { 
-			handleError(error);
-		}
-		@Override
-		public void onSuccess(Vendor[] result) {
-			displayFavourites(result);
 		}
 
-	});
-}
-
-//display favourites table
-private void displayFavourites(Vendor[] result) {
-	for (Vendor vendor: result) {
-		displayFavourites(vendor);
 	}
-}
 
-// adds vendor to favourites (from favourite click)
-private void addFavourites(final Vendor vendor){
-	//don't add vendor if it's already in the list of favourites
-	if (favouriteVendors.contains(vendor))
-		return;
+	// last updated time stamp
+	private void addTimeStamp(){
+		lastUpdatedLabel.setText("Last update : "  
+				+ DateTimeFormat.getFormat(DateTimeFormat.PredefinedFormat.DATE_TIME_MEDIUM).format(new Date()));
 
-	favouriteService.addFavourite(vendor, new AsyncCallback<Void>(){
-		public void onFailure(Throwable error) {
-			handleError(error);	
+		mainPanel.add(lastUpdatedLabel);
+	}
+
+
+	//------------------------- Vendors Table Starts ---------------
+	//service proxy 
+	private void loadVendorList() {
+		// Initialize the service proxy.
+		if (VendorSvc == null) {
+			VendorSvc = GWT.create(VendorService.class);
 		}
-		public void onSuccess(Void ignore) {
+
+		VendorSvc.getVendors(new AsyncCallback<Vendor[]>() {
+			public void onFailure (Throwable error) { 
+				handleError(error);
+			}
+			@Override
+			public void onSuccess(Vendor[] result) {
+				displayVendors(result);
+				addDropDownMenu(result);
+				addTimeStamp();
+			}
+		});
+	}
+
+	//remove all data and display vendor table with new data
+	private void displayVendors(Vendor[] result) {
+		for (Vendor v : result) {
+			//display vendor in table
+			displayVendors(v);
+		}
+	}
+
+	// helper function for displayVendors(Vendor[] result) 
+	private void displayVendors(final Vendor vendor) {
+		// don't add vendor if it already exists 
+		if (vendors.contains(vendor)){
+			return;
+		}
+
+		int row = vendorsFlexTable.getRowCount();
+		vendors.add(vendor);
+
+		vendorsFlexTable.getRowFormatter().addStyleName(row, "FlexTable-noHighlight");
+		vendorsFlexTable.setText(row, 0, vendor.getName());
+		vendorsFlexTable.getColumnFormatter().addStyleName(0, "vendorColumn");
+		vendorsFlexTable.setText(row, 1, vendor.getAddress());
+		vendorsFlexTable.getColumnFormatter().addStyleName(1, "vendorColumn"); 
+		vendorsFlexTable.setText(row, 2, vendor.getFoodtype());
+		vendorsFlexTable.getColumnFormatter().addStyleName(2, "vendorColumn");
+
+		// Add a button to add this vendor to favourites
+		Button favouriteButton = new Button("Favourite");
+		vendorsFlexTable.setWidget(row, 3, favouriteButton);
+		favouriteButton.addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				new TwitterPopup(vendor).show();
+				addFavourites(vendor);
+			}
+		});
+	}
+	//------------------------- Vendors Table Ends ---------------
+
+	//------------------------- Favourites Table Starts ---------------
+
+	//load user's favourites
+	private void loadFavouritesList() {
+		favouriteService.getFavourite(new AsyncCallback<Vendor[]>() {
+			public void onFailure (Throwable error) { 
+				handleError(error);
+			}
+			@Override
+			public void onSuccess(Vendor[] result) {
+				displayFavourites(result);
+			}
+
+		});
+	}
+
+	//display favourites table
+	private void displayFavourites(Vendor[] result) {
+		for (Vendor vendor: result) {
 			displayFavourites(vendor);
 		}
-	});
-}
-
-private void displayFavourites (final Vendor vendor) {
-	int row = favouritesTable.getRowCount();
-	favouriteVendors.add(vendor);
-
-	favouritesTable.getRowFormatter().addStyleName(row, "FlexTable-noHighlight");
-	favouritesTable.setText(row, 0, vendor.getName());
-	favouritesTable.getColumnFormatter().addStyleName(0, "vendorColumn");
-	favouritesTable.setText(row, 1, vendor.getAddress());
-	favouritesTable.getColumnFormatter().addStyleName(1, "vendorColumn"); 
-	favouritesTable.setText(row, 2, vendor.getFoodtype());
-	favouritesTable.getColumnFormatter().addStyleName(2, "vendorColumn");
-
-	Button removeButton = new Button("Remove!!");
-	favouritesTable.setWidget(row, 3, removeButton);
-	removeButton.addClickHandler(new ClickHandler() {
-		public void onClick(ClickEvent event) {
-			removeFavourite(vendor);
-		}
-	});
-}
-
-
-private void removeFavourite(final Vendor vendor) {
-	favouriteService.removeFavourite(vendor, new AsyncCallback<Void>(){
-		public void onFailure(Throwable error) {
-			handleError(error);
-		}
-		public void onSuccess(Void ignore) {
-			undisplayFavourite(vendor);
-		}
-	});
-}
-
-private void undisplayFavourite(Vendor vendor) {
-	int removedIndex = favouriteVendors.indexOf(vendor);
-	favouriteVendors.remove(removedIndex);
-	favouritesTable.removeRow(removedIndex +1);
-}
-
-
-//------------------------- Favourites Table Ends ---------------
-
-
-// handle removing favourites
-ClickHandler RemoveHandler = new ClickHandler() {
-	@Override
-	public void onClick(ClickEvent event) {
-		Cell src = null;
-		try {
-			src = favouritesTable.getCellForEvent(event);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		int rowIndex=0;
-		if (src!=null)
-			rowIndex = src.getRowIndex();
-		if (rowIndex==0)
-			return;
 	}
 
-};
+	// adds vendor to favourites (from favourite click)
+	private void addFavourites(final Vendor vendor){
+		//don't add vendor if it's already in the list of favourites
+		if (favouriteVendors.contains(vendor))
+			return;
 
-private Marker createMarker(Vendor v) {
-	double lat =v.getLat();
-	double lon = v.getLon();
-	final String name = v.getName();
-	LatLng point = LatLng.newInstance(lat, lon);
-	final Marker marker = new Marker(point);
+		favouriteService.addFavourite(vendor, new AsyncCallback<Void>(){
+			public void onFailure(Throwable error) {
+				handleError(error);	
+			}
+			public void onSuccess(Void ignore) {
+				displayFavourites(vendor);
+			}
+		});
+	}
 
-	marker.addMarkerClickHandler(new MarkerClickHandler() {
-		public void onClick(MarkerClickEvent event) {
-			InfoWindow info = map.getInfoWindow();
-			info.open(marker,
-					new InfoWindowContent("Marker #<b>" + name + "</b>"));
+	private void displayFavourites (final Vendor vendor) {
+		int row = favouritesTable.getRowCount();
+		favouriteVendors.add(vendor);
+
+		favouritesTable.getRowFormatter().addStyleName(row, "FlexTable-noHighlight");
+		favouritesTable.setText(row, 0, vendor.getName());
+		favouritesTable.getColumnFormatter().addStyleName(0, "vendorColumn");
+		favouritesTable.setText(row, 1, vendor.getAddress());
+		favouritesTable.getColumnFormatter().addStyleName(1, "vendorColumn"); 
+		favouritesTable.setText(row, 2, vendor.getFoodtype());
+		favouritesTable.getColumnFormatter().addStyleName(2, "vendorColumn");
+
+		Button removeButton = new Button("Remove!!");
+		favouritesTable.setWidget(row, 3, removeButton);
+		removeButton.addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				removeFavourite(vendor);
+			}
+		});
+	}
+
+
+	private void removeFavourite(final Vendor vendor) {
+		favouriteService.removeFavourite(vendor, new AsyncCallback<Void>(){
+			public void onFailure(Throwable error) {
+				handleError(error);
+			}
+			public void onSuccess(Void ignore) {
+				undisplayFavourite(vendor);
+			}
+		});
+	}
+
+	private void undisplayFavourite(Vendor vendor) {
+		int removedIndex = favouriteVendors.indexOf(vendor);
+		favouriteVendors.remove(removedIndex);
+		favouritesTable.removeRow(removedIndex +1);
+	}
+
+
+	//------------------------- Favourites Table Ends ---------------
+
+
+	// handle removing favourites
+	ClickHandler RemoveHandler = new ClickHandler() {
+		@Override
+		public void onClick(ClickEvent event) {
+			Cell src = null;
+			try {
+				src = favouritesTable.getCellForEvent(event);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			int rowIndex=0;
+			if (src!=null)
+				rowIndex = src.getRowIndex();
+			if (rowIndex==0)
+				return;
 		}
-	});
-	System.out.println(v.toString());
-	return marker;
-}
+
+	};
+
+	private Marker createMarker(Vendor v) {
+		double lat =v.getLat();
+		double lon = v.getLon();
+		final String name = v.getName();
+		LatLng point = LatLng.newInstance(lat, lon);
+		final Marker marker = new Marker(point);
+
+		marker.addMarkerClickHandler(new MarkerClickHandler() {
+			public void onClick(MarkerClickEvent event) {
+				InfoWindow info = map.getInfoWindow();
+				info.open(marker,
+						new InfoWindowContent("Marker #<b>" + name + "</b>"));
+			}
+		});
+		System.out.println(v.toString());
+		return marker;
+	}
 
 }
 

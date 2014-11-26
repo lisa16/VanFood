@@ -5,13 +5,18 @@ import java.io.Serializable;
 
 public class NotLoggedInException extends Exception implements Serializable {
 
-  public NotLoggedInException() {
-    super();
-  }
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -5097846309032067489L;
 
-  public NotLoggedInException(String message) {
-    super(message);
-  }
+	public NotLoggedInException() {
+		super();
+	}
+
+	public NotLoggedInException(String message) {
+		super(message);
+	}
 
 
 }

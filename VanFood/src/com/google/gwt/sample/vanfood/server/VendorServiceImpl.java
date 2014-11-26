@@ -2,27 +2,21 @@ package com.google.gwt.sample.vanfood.server;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.google.gwt.sample.vanfood.client.VendorService;
-import com.google.gwt.sample.vanfood.shared.Vendor;
-import com.google.gwt.user.server.rpc.RemoteServiceServlet;
-
-import org.apache.poi.hssf.usermodel.HSSFRow;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.commons.io.FileUtils;
-
-import java.io.IOException;
-import java.net.URL;
-import java.net.URLConnection;
 
 import javax.jdo.JDOHelper;
 import javax.jdo.PersistenceManager;
 import javax.jdo.PersistenceManagerFactory;
 import javax.jdo.Query;
+
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+
+import com.google.gwt.sample.vanfood.client.VendorService;
+import com.google.gwt.sample.vanfood.shared.Vendor;
+import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 public class VendorServiceImpl extends RemoteServiceServlet implements VendorService{
 
