@@ -603,7 +603,7 @@ public class VanFood implements EntryPoint {
 			public void onClick(MarkerClickEvent event) {
 				InfoWindow info = map.getInfoWindow();
 				info.open(marker,
-						new InfoWindowContent(name + "<br>" + address));
+						new InfoWindowContent("<b>" + name + "<br>" + address + "</b>"));
 			}
 		});
 		System.out.println(v.toString());
