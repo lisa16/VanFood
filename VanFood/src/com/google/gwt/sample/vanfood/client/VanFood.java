@@ -595,6 +595,7 @@ public class VanFood implements EntryPoint {
 		double lat =v.getLat();
 		double lon = v.getLon();
 		final String name = v.getName();
+		final String address = v.getAddress();
 		LatLng point = LatLng.newInstance(lat, lon);
 		final Marker marker = new Marker(point);
 
@@ -602,7 +603,7 @@ public class VanFood implements EntryPoint {
 			public void onClick(MarkerClickEvent event) {
 				InfoWindow info = map.getInfoWindow();
 				info.open(marker,
-						new InfoWindowContent("Marker #<b>" + name + "</b>"));
+						new InfoWindowContent(name + "<br>" + address));
 			}
 		});
 		System.out.println(v.toString());
