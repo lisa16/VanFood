@@ -336,7 +336,6 @@ public class VanFood implements EntryPoint {
 
 	// handle clicking on a table row (so a vendor can be selected)
 	public void selectVendor (ClickEvent event, FlexTable table, ArrayList<Vendor> vendors) {
-		map.clearOverlays();
 		Cell src = null;
 		try {
 			src = table.getCellForEvent(event);
@@ -346,8 +345,9 @@ public class VanFood implements EntryPoint {
 		int rowIndex=0;
 		if (src!=null)
 			rowIndex = src.getRowIndex();
-		if (rowIndex==0)
+		if ((rowIndex==0)||(src.getCellIndex()==3))
 			return;
+		map.clearOverlays();
 		String rowStyle = table.getRowFormatter().getStyleName(rowIndex).trim();
 		String vendorName = table.getText(rowIndex, 0);
 		String vendorAddress = table.getText(rowIndex, 1);
