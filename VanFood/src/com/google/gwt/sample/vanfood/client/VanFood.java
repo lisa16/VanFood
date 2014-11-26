@@ -121,10 +121,6 @@ public class VanFood implements EntryPoint {
 		loginPanel.add(loginLabel);
 		loginPanel.add(signInLink);
 		RootPanel.get("vendorList").add(loginPanel);
-		Button adminButton = new Button("Sign in as Administrator");
-		adminButton.getElement().setClassName("btn btn-default btn-primary");
-		adminButton.addClickHandler(new AdminButtonHandler());
-		loginPanel.add(adminButton);
 	}
 
 	//handles not logged in error
@@ -184,7 +180,6 @@ public class VanFood implements EntryPoint {
 	}
 
 	private void loadAdminPage(){
-//		DOM.getElementById("vendorList").getStyle().setDisplay(Display.NONE);
 		Button updateButton = new Button("Parse Updated Data");
 		updateButton.getElement().setClassName("btn btn-default btn-primary");
 
@@ -403,15 +398,6 @@ public class VanFood implements EntryPoint {
 				}}	
 		}}
 
-	class AdminButtonHandler implements ClickHandler{
-
-		@Override
-		public void onClick(ClickEvent event) {
-			loadAdminPage();
-
-		}
-
-	}
 
 	// last updated time stamp
 	private void addTimeStamp(){
