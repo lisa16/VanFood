@@ -54,7 +54,4 @@ public class Favourite {
     this.user = user;
   }
 
-//  public void setVendor(Vendor vendor) {
-//    this.vendor = vendor;
-//  }
 }

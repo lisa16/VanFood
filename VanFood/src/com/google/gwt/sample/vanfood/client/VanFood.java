@@ -42,45 +42,36 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  */
 public class VanFood implements EntryPoint {
 
+	private LoginInfo loginInfo = null;
+
+	//Panels=====================================================
 	private VerticalPanel mainPanel = new VerticalPanel();
 	private HorizontalPanel vendorPanel = new HorizontalPanel();
-	private FlexTable vendorsFlexTable = new FlexTable();
-	private FlexTable favouritesTable = new FlexTable();
 	private ScrollPanel vendorsScrollPanel = new ScrollPanel();
 	private ScrollPanel favouritesScrollPanel = new ScrollPanel();
 	private TabPanel vendorsTabPanel = new TabPanel();
 	private VerticalPanel mapPanel = new VerticalPanel();
-	private MapWidget map;
 	private FlowPanel buttonsPanel = new FlowPanel();
+	//============================================================
+
+	//Tables & Lists ===================================================
+	private FlexTable vendorsFlexTable = new FlexTable();
+	private FlexTable favouritesTable = new FlexTable();
 	private ArrayList<Vendor> vendors = new ArrayList<Vendor>();
-	private LoginInfo loginInfo = null;
-	private VerticalPanel loginPanel = new VerticalPanel();
-	private Label loginLabel = new Label(
-			"Please sign in to your Google Account to access the VanFood application.");
-	private Anchor signInLink = new Anchor("Sign In");
-	private Anchor signOutLink = new Anchor("Sign Out");
-	public ListBox lb = new ListBox();
-	private VerticalPanel adminPanel = new VerticalPanel();
-	private VerticalPanel contactPanel = new VerticalPanel();
-	private Label lastUpdatedLabel = new Label();
-	private VendorServiceAsync VendorSvc = GWT.create(VendorService.class);
-	private MailServiceAsync mailSvc = GWT.create(MailService.class);
 	private ArrayList<Vendor> favouriteVendors = new ArrayList<Vendor>();
-	private final FavouriteServiceAsync favouriteService = GWT.create(FavouriteService.class);
+	private ListBox lb = new ListBox();
+	//====================================================================
+
+	//Map=================================================================
+	private MapWidget map;
 	private String apiKey = "AIzaSyC9HJfCdipVC6W6qo8ewsZkJz0mCpmviHQ";
+	//=====================================================================
 
-	/**
-	 * The message displayed to the user when the server cannot be reached or
-	 * returns an error.
-	 */
-	//	private static final String SERVER_ERROR = "An error occurred while "
-	//			+ "attempting to contact the server. Please check your network "
-	//			+ "connection and try again.";
-
-	/**
-	 * Create a remote service proxy to talk to the server-side Greeting service.
-	 */
-	//	private final GreetingServiceAsync greetingService = GWT.create(GreetingService.class);
+	//Services===============================================================================
+	private VendorServiceAsync vendorSvc = GWT.create(VendorService.class);
+	private MailServiceAsync mailSvc = GWT.create(MailService.class);
+	private final FavouriteServiceAsync favouriteService = GWT.create(FavouriteService.class);
+	//========================================================================================
 
 	/**
 	 * This is the entry point method.
@@ -117,7 +108,11 @@ public class VanFood implements EntryPoint {
 	}
 
 	private void loadLogin(){
+		Anchor signInLink = new Anchor("Sign In");
 		signInLink.setHref(loginInfo.getLoginUrl());
+		Label loginLabel = new Label(
+				"Please sign in to your Google Account to access the VanFood application.");
+		VerticalPanel loginPanel = new VerticalPanel();
 		loginPanel.add(loginLabel);
 		loginPanel.add(signInLink);
 		RootPanel.get("vendorList").add(loginPanel);
@@ -170,6 +165,7 @@ public class VanFood implements EntryPoint {
 						});
 			}});
 
+		VerticalPanel contactPanel = new VerticalPanel();
 		contactPanel.add(subjectLabel);
 		contactPanel.add(subject);
 		contactPanel.add(msgLabel);
@@ -182,32 +178,26 @@ public class VanFood implements EntryPoint {
 	private void loadAdminPage(){
 		Button updateButton = new Button("Parse Updated Data");
 		updateButton.getElement().setClassName("btn btn-default btn-primary");
-
-
+		VerticalPanel adminPanel = new VerticalPanel();
 		adminPanel.add(updateButton);
 		updateButton.addClickHandler(new ClickHandler(){
 
 			@Override
 			public void onClick(ClickEvent event) {
 
-				VendorSvc.parseVendors(new AsyncCallback<String>()
+				vendorSvc.parseVendors(new AsyncCallback<String>()
 						{
 					public void onFailure(Throwable caught) {
-						System.out.println("Data NOT parsed/stored!");
 						Window.alert("Data NOT parsed/stored!");
 					}
 
 					@Override
 					public void onSuccess(String result) {
-						System.out.println(result);
 						Window.alert(result);
 					}
 
 						});
 			}});
-
-
-
 
 		RootPanel.get("adminPage").add(adminPanel);
 	}
@@ -215,40 +205,16 @@ public class VanFood implements EntryPoint {
 	private void loadVanFood() {
 
 		// Set up sign out hyperlink.
+		Anchor signOutLink = new Anchor("Sign Out");
 		signOutLink.setHref(loginInfo.getLogoutUrl());
 
-		//highlights row clicked
-		vendorsFlexTable.addClickHandler(new ClickHandler () {
-			public void onClick(ClickEvent event) {
-				selectVendor(event, vendorsFlexTable, vendors);
-			}
-		});
-
-		favouritesTable.addClickHandler(new ClickHandler () {
-			public void onClick(ClickEvent event) {
-				selectVendor(event, favouritesTable, favouriteVendors);
-			}
-		});
-
-
 		// Create table for vendor data.
-		// Add styles to elements in the stock list table.
-		vendorsFlexTable.getRowFormatter().addStyleName(0, "vendorListHeader");
-		vendorsFlexTable.addStyleName("vendorList");
-		vendorsFlexTable.setText(0, 0, "Vendor");  
-		vendorsFlexTable.setText(0, 1, "Location");  
-		vendorsFlexTable.setText(0, 2, "Food Type"); 
-		vendorsFlexTable.setText(0, 3, "Add to Favourite");
+		createVendorsTable();
 
-		// create table for favourites
-		favouritesTable.getRowFormatter().addStyleName(0, "vendorListHeader");
-		favouritesTable.addStyleName("vendorList");
-		favouritesTable.setText(0, 0, "Vendor");  
-		favouritesTable.setText(0, 1, "Location");  
-		favouritesTable.setText(0, 2, "Food Type"); 
-		favouritesTable.setText(0, 3, "Remove Favourite");
+		// Create table for favourites
+		createFavouritesTable();
 
-		//call to service proxy
+		// Call to service proxy
 		loadVendorList();
 		loadFavouritesList();
 
@@ -258,14 +224,6 @@ public class VanFood implements EntryPoint {
 		map = new MapWidget(van, 12);
 		map.setSize("35em", "35em");
 		mapPanel.add(map);
-
-		//create scroll for vendors 
-		vendorsScrollPanel.add(vendorsFlexTable);
-		vendorsScrollPanel.setSize("45em", "35em");  
-
-		//create scroll for favourites
-		favouritesScrollPanel.add(favouritesTable);
-		favouritesScrollPanel.setSize("45em", "35em");  
 
 		//create tab area
 		vendorsTabPanel.add(vendorsScrollPanel, "Vendors");
@@ -281,6 +239,18 @@ public class VanFood implements EntryPoint {
 		vendorPanel.add(mapPanel);
 
 		//add contact us button
+		addContactButton();
+
+		// Assemble Main panel.
+		mainPanel.add(signOutLink);
+		mainPanel.add(buttonsPanel);
+		mainPanel.add(vendorPanel);
+
+		// Associate the Main panel with the HTML host page.
+		RootPanel.get("vendorList").add(mainPanel);
+	}
+
+	private void addContactButton(){
 		Button contactButton = new Button("Contact Us");
 		contactButton.getElement().setClassName("btn btn-default btn-primary");
 		buttonsPanel.add(contactButton);
@@ -293,13 +263,49 @@ public class VanFood implements EntryPoint {
 			}
 
 		});
-		// Assemble Main panel.
-		mainPanel.add(signOutLink);
-		mainPanel.add(buttonsPanel);
-		mainPanel.add(vendorPanel);
 
-		// Associate the Main panel with the HTML host page.
-		RootPanel.get("vendorList").add(mainPanel);
+	}
+
+	private void createVendorsTable(){
+		vendorsFlexTable.getRowFormatter().addStyleName(0, "vendorListHeader");
+		vendorsFlexTable.addStyleName("vendorList");
+		vendorsFlexTable.setText(0, 0, "Vendor");  
+		vendorsFlexTable.setText(0, 1, "Location");  
+		vendorsFlexTable.setText(0, 2, "Food Type"); 
+		vendorsFlexTable.setText(0, 3, "Add to Favourite");
+
+		//create scroll for vendors 
+		vendorsScrollPanel.add(vendorsFlexTable);
+		vendorsScrollPanel.setSize("45em", "35em"); 
+
+		//highlights row clicked
+		vendorsFlexTable.addClickHandler(new ClickHandler () {
+			public void onClick(ClickEvent event) {
+				selectVendor(event, vendorsFlexTable, vendors);
+			}
+		});
+
+	}
+
+	private void createFavouritesTable(){
+		favouritesTable.getRowFormatter().addStyleName(0, "vendorListHeader");
+		favouritesTable.addStyleName("vendorList");
+		favouritesTable.setText(0, 0, "Vendor");  
+		favouritesTable.setText(0, 1, "Location");  
+		favouritesTable.setText(0, 2, "Food Type"); 
+		favouritesTable.setText(0, 3, "Remove Favourite");
+
+		//create scroll for favourites
+		favouritesScrollPanel.add(favouritesTable);
+		favouritesScrollPanel.setSize("45em", "35em");  
+
+		//highlights row clicked
+		favouritesTable.addClickHandler(new ClickHandler () {
+			public void onClick(ClickEvent event) {
+				selectVendor(event, favouritesTable, favouriteVendors);
+			}
+		});
+
 	}
 
 	/**
@@ -335,7 +341,6 @@ public class VanFood implements EntryPoint {
 		try {
 			src = table.getCellForEvent(event);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		int rowIndex=0;
@@ -343,23 +348,23 @@ public class VanFood implements EntryPoint {
 			rowIndex = src.getRowIndex();
 		if (rowIndex==0)
 			return;
-		if (table.getRowFormatter().getStyleName(rowIndex).trim().equals("FlexTable-noHighlight") ||
-				table.getRowFormatter().getStyleName(rowIndex).trim().equals("")) {
-			table.getRowFormatter().addStyleName(rowIndex, "FlexTable-Highlight");
-			table.getRowFormatter().removeStyleName(rowIndex, "FlexTable-noHighlight");
+		String rowStyle = table.getRowFormatter().getStyleName(rowIndex).trim();
+		String vendorName = table.getText(rowIndex, 0);
+		String vendorAddress = table.getText(rowIndex, 1);
+		if (rowStyle.equals("FlexTable-noHighlight") ||
+				rowStyle.equals("")) {
+			setRowHighlighted(table, rowIndex, true);
 			for (Vendor v : vendors) {
-				if (table.getText(rowIndex, 0).equalsIgnoreCase(v.getName()) &&
-						table.getText(rowIndex, 1).equalsIgnoreCase(v.getAddress())) 
+				if (vendorName.equalsIgnoreCase(v.getName()) &&
+						vendorAddress.equalsIgnoreCase(v.getAddress())) 
 					v.setHighlighted(true);
 			}
 
-
 		} else {
-			table.getRowFormatter().addStyleName(rowIndex, "FlexTable-noHighlight");
-			table.getRowFormatter().removeStyleName(rowIndex, "FlexTable-Highlight");
+			setRowHighlighted(table, rowIndex, false);
 			for (Vendor v : vendors) {
-				if (table.getText(rowIndex, 0).equalsIgnoreCase(v.getName()) &&
-						table.getText(rowIndex, 1).equalsIgnoreCase(v.getAddress()))
+				if (vendorName.equalsIgnoreCase(v.getName()) &&
+						vendorAddress.equalsIgnoreCase(v.getAddress()))
 					v.setHighlighted(false);
 			}
 		}
@@ -370,6 +375,17 @@ public class VanFood implements EntryPoint {
 		}
 	}	
 
+	private void setRowHighlighted(FlexTable table, int rowIndex, boolean isHighlight){
+		if (isHighlight){
+			table.getRowFormatter().addStyleName(rowIndex, "FlexTable-Highlight");
+			table.getRowFormatter().removeStyleName(rowIndex, "FlexTable-noHighlight");			
+		}
+		else {
+			table.getRowFormatter().addStyleName(rowIndex, "FlexTable-noHighlight");
+			table.getRowFormatter().removeStyleName(rowIndex, "FlexTable-Highlight");			
+		}
+		
+	}
 
 	// handles drop down menu 
 	class MenuHandler implements ChangeHandler{
@@ -378,29 +394,36 @@ public class VanFood implements EntryPoint {
 		public void onChange(ChangeEvent event) {
 			map.clearOverlays();
 			HTMLTable.RowFormatter rf = vendorsFlexTable.getRowFormatter();
+			// Make sure everything on the table is not highlighted 
 			for(int r=1; r<vendorsFlexTable.getRowCount();r++){
 				rf.setStyleName(r, "FlexTable-noHighlight");
 			}
 			for (Vendor v : vendors)
 				v.setHighlighted(false);
-			int index = lb.getSelectedIndex();
-			String foodType = lb.getItemText(index);
-			for(int r=0; r<vendors.size(); r++){
-				if(vendors.get(r).getFoodtype().equals(foodType)){
-					int i = (r+1);
-					rf.setStyleName(i, "FlexTable-Highlight");
-					vendors.get(r).setHighlighted(true);
-					map.addOverlay(createMarker(vendors.get(r)));
-				}				
-			}	for(Vendor v : vendors){
+			highlightSelectedFoodType(rf);
+			for(Vendor v : vendors){
 				if(v.isHighlighted()){
 					map.addOverlay(createMarker(v));
 				}}	
 		}}
 
+	// Highlight vendors that serve the selected food type
+	private void highlightSelectedFoodType(HTMLTable.RowFormatter rf){
+		int index = lb.getSelectedIndex();
+		String foodType = lb.getItemText(index);
+		for(int r=0; r<vendors.size(); r++){
+			if(vendors.get(r).getFoodtype().equals(foodType)){
+				int i = (r+1);
+				rf.setStyleName(i, "FlexTable-Highlight");
+				vendors.get(r).setHighlighted(true);
+				map.addOverlay(createMarker(vendors.get(r)));
+			}				
+		}
+	}
 
 	// last updated time stamp
 	private void addTimeStamp(){
+		Label lastUpdatedLabel = new Label();
 		lastUpdatedLabel.setText("Last update : "  
 				+ DateTimeFormat.getFormat(DateTimeFormat.PredefinedFormat.DATE_TIME_MEDIUM).format(new Date()));
 
@@ -412,11 +435,11 @@ public class VanFood implements EntryPoint {
 	//service proxy 
 	private void loadVendorList() {
 		// Initialize the service proxy.
-		if (VendorSvc == null) {
-			VendorSvc = GWT.create(VendorService.class);
+		if (vendorSvc == null) {
+			vendorSvc = GWT.create(VendorService.class);
 		}
 
-		VendorSvc.getVendors(new AsyncCallback<Vendor[]>() {
+		vendorSvc.getVendors(new AsyncCallback<Vendor[]>() {
 			public void onFailure (Throwable error) { 
 				handleError(error);
 			}
@@ -557,7 +580,6 @@ public class VanFood implements EntryPoint {
 			try {
 				src = favouritesTable.getCellForEvent(event);
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			int rowIndex=0;

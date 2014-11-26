@@ -32,14 +32,10 @@ public class MailServiceImpl extends  RemoteServiceServlet implements MailServic
 		catch (AddressException e) {            
 			return("AddressException");
 		}  
-
 		catch (MessagingException e) {
-			return("MessageException");
-			
+			return("MessageException");			
 		}
-
 		return ("message sent!");
-
 
 	}
 }
